@@ -1,0 +1,28 @@
+========================================================================
+ MD-CONFIRM RTOS: INDEPENDENT ZERO-TRUST FORENSIC VERIFIER CLI          
+ Standards: RFC 6962 Merkle Tree + RFC 8032 Ed25519 Signatures           
+ Mode: Zero-Trust External Audit (Pinned Device Root-of-Trust)          
+========================================================================
+[*] Journal Source        : http://127.0.0.1:9090/api/journal
+[*] Pinned Device PubKey  : 7ea81ac6c1fc3a9a...63f291160696a468
+[+] Loaded 18596 sealed forensic records.
+
+--- AUDIT TRAIL (Showing most recent 8 of 18596 sealed entries) ---
+ Seq: 12045 | Type: AUTHENTIC   | Root: cee166dc1441... | Sig: 59865dbaa904... | Status: VERIFIED_AUTHENTIC_SILICON
+ Seq: 12047 | Type: GHOST_EVENT | Root: 800583949d02... | Sig: 004854f735f0... | Status: GHOST_EVENT_WATCHDOG_TRIPPED
+ Seq: 12046 | Type: AUTHENTIC   | Root: 108d1b6057bd... | Sig: d13e6e17a18c... | Status: VERIFIED_AUTHENTIC_SILICON
+ Seq: 12048 | Type: GHOST_EVENT | Root: c60be450012e... | Sig: 099bc59d7eb6... | Status: GHOST_EVENT_WATCHDOG_TRIPPED
+ Seq: 12047 | Type: AUTHENTIC   | Root: f9f7c0b04b92... | Sig: 8ef22b718099... | Status: VERIFIED_AUTHENTIC_SILICON
+ Seq: 12049 | Type: GHOST_EVENT | Root: 04f28ab0975f... | Sig: 1ad657ca3d7b... | Status: GHOST_EVENT_WATCHDOG_TRIPPED
+ Seq: 12048 | Type: AUTHENTIC   | Root: 2cba1e4c413f... | Sig: 8599c3e313d3... | Status: VERIFIED_AUTHENTIC_SILICON
+ Seq: 12050 | Type: GHOST_EVENT | Root: 898dba11b60a... | Sig: b19cd9586475... | Status: GHOST_EVENT_WATCHDOG_TRIPPED
+
+------------------------------------------------------------------------
+ Total Sealed Records Audited : 18596
+ Recalculated Merkle Root     : 898dba11b60aab1120fa5e4a64b4b546b72b4a401686ce8cb048d86ee068ffd9
+ Last Recorded Merkle Root    : 898dba11b60aab1120fa5e4a64b4b546b72b4a401686ce8cb048d86ee068ffd9
+ Merkle Root Consistency      : MATCH [PASS]
+ Ed25519 Hardware Signatures  : ALL VERIFIED [PASS]
+========================================================================
+ AUDIT VERDICT                : root and signature verified [PASS]
+========================================================================

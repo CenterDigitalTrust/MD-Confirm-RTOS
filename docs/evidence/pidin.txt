@@ -1,0 +1,190 @@
+=== PIDIN BEFORE SLAY ===
+
+=== PIDIN_BEFORE_SLAY_START ===
+
+
+     pid tid name                         prio STATE          Blocked                     
+
+
+       1   1 /proc/boot/procnto-smp-instr   0f READY                                      
+
+
+[md-capture] Frame #58 (Scen 1) | EOF->Capture: 7.9 µs | Jitter: 2726.0 µs | PCE: 34.1 dB (2547 lin) | NCC: 0.789 | Status: VERIFIED_AUTHENTIC_SILICON
+
+
+       1   2 /proc/boot/procnto-smp-instr   0f READY                                      
+
+
+[md-seal] Sealed Leaf #58 (Frame #58) | Leaf: faaab9cefb5590d5... | Root: aa124d669275ef4f... | Sig: b1d067f992532dd8... | Journal: /data/mdfp_evidence
+
+
+       1   3 /proc/boot/procnto-smp-instr 255i INTR                                       
+
+
+       1   4 /proc/boot/procnto-smp-instr 255i INTR                                       
+
+
+[md-capture] Frame #59 (Scen 1) | EOF->Capture: 8.7 µs | Jitter: 1697.2 µs | PCE: 34.0 dB (2534 lin) | NCC: 0.787 | Status: VERIFIED_AUTHENTIC_SILICON
+
+
+       1   5 /proc/boot/procnto-smp-instr 254i INTR                                       
+
+
+[md-seal] Sealed Leaf #59 (Frame #59) | Leaf: 749a1c69bfc30122... | Root: fc8eb04793306348... | Sig: b39bd886b4efc90f... | Journal: /data/mdfp_evidence
+
+
+       1   6 /proc/boot/procnto-smp-instr 254i INTR                                       
+
+
+       1   7 /proc/boot/procnto-smp-instr   1f NANOSLEEP                                  
+
+
+       1   8 /proc/boot/procnto-smp-instr  10r ???                                        
+
+
+       1   9 /proc/boot/procnto-smp-instr  10r REPLY          1                           
+
+
+       1  10 /proc/boot/procnto-smp-instr  10r RECEIVE        1                           
+
+
+[md-capture] Frame #60 (Scen 1) | EOF->Capture: 8.8 µs | Jitter: 541.6 µs | PCE: 34.0 dB (2537 lin) | NCC: 0.787 | Status: VERIFIED_AUTHENTIC_SILICON
+
+
+       1  11 /proc/boot/procnto-smp-instr  10r RECEIVE        1                           
+
+
+[md-seal] Sealed Leaf #60 (Frame #60) | Leaf: f35ac0193e0b3ed1... | Root: 83ae67108d9dde6a... | Sig: 29112f4e7e0f095d... | Journal: /data/mdfp_evidence
+
+
+       1  12 /proc/boot/procnto-smp-instr  10r RECEIVE        1                           
+
+
+       1  13 /proc/boot/procnto-smp-instr  10r RECEIVE        1                           
+
+
+       1  14 /proc/boot/procnto-smp-instr  10r RECEIVE        1                           
+
+
+       1  15 /proc/boot/procnto-smp-instr  10r RUNNING                                    
+
+
+       1  16 /proc/boot/procnto-smp-instr  10r RECEIVE        1                           
+
+
+       1  17 /proc/boot/procnto-smp-instr  10r RECEIVE        1                           
+
+
+       1  18 /proc/boot/procnto-smp-instr  21r RECEIVE        1                           
+
+
+[md-capture] Frame #61 (Scen 1) | EOF->Capture: 14.2 µs | Jitter: 600.6 µs | PCE: 34.1 dB (2543 lin) | NCC: 0.788 | Status: VERIFIED_AUTHENTIC_SILICON
+
+
+       1  19 /proc/boot/procnto-smp-instr  10r RECEIVE        1                           
+
+
+[md-seal] Sealed Leaf #61 (Frame #61) | Leaf: 265681ebce5cd85d... | Root: 7a934e8e354f9edc... | Sig: 544775c91780e127... | Journal: /data/mdfp_evidence
+
+
+       1  20 /proc/boot/procnto-smp-instr  10r RECEIVE        1                           
+
+
+       1  21 /proc/boot/procnto-smp-instr  10r RECEIVE        1                           
+
+
+
+
+=== PIDIN AFTER SLAY ===
+
+=== PIDIN_AFTER_SLAY_START ===
+
+
+     pid tid name                         prio STATE          Blocked                     
+
+
+       1   1 /proc/boot/procnto-smp-instr   0f READY                                      
+
+
+       1   2 /proc/boot/procnto-smp-instr   0f READY                                      
+
+
+       1   3 /proc/boot/procnto-smp-instr 255i INTR                                       
+
+
+[md-capture] Frame #135 (Scen 1) | EOF->Capture: 6.7 µs | Jitter: 444.3 µs | PCE: 34.1 dB (2546 lin) | NCC: 0.789 | Status: VERIFIED_AUTHENTIC_SILICON
+
+
+       1   4 /proc/boot/procnto-smp-instr 255i INTR                                       
+
+
+[md-seal] Sealed Leaf #135 (Frame #135) | Leaf: b68d881386f1c7cf... | Root: fe24639b1bda5934... | Sig: 8e3568e966625c02... | Journal: /data/mdfp_evidence
+
+
+       1   5 /proc/boot/procnto-smp-instr 254i INTR                                       
+
+
+       1   6 /proc/boot/procnto-smp-instr 254i INTR                                       
+
+
+       1   7 /proc/boot/procnto-smp-instr   1f NANOSLEEP                                  
+
+
+       1   8 /proc/boot/procnto-smp-instr  10r ???                                        
+
+
+       1   9 /proc/boot/procnto-smp-instr  10r REPLY          1                           
+
+
+       1  10 /proc/boot/procnto-smp-instr  10r RECEIVE        1                           
+
+
+       1  11 /proc/boot/procnto-smp-instr  10r RECEIVE        1                           
+
+
+       1  12 /proc/boot/procnto-smp-instr  10r RECEIVE        1                           
+
+
+[md-capture] Frame #136 (Scen 1) | EOF->Capture: 8.3 µs | Jitter: 992.7 µs | PCE: 34.0 dB (2534 lin) | NCC: 0.787 | Status: VERIFIED_AUTHENTIC_SILICON
+
+
+       1  13 /proc/boot/procnto-smp-instr  10r RECEIVE        1                           
+
+
+[md-seal] Sealed Leaf #136 (Frame #136) | Leaf: ce70b8ddd2a64421... | Root: c9d593059286b2a6... | Sig: c921f76a2f4d592d... | Journal: /data/mdfp_evidence
+
+
+       1  14 /proc/boot/procnto-smp-instr  10r RUNNING                                    
+
+
+       1  15 /proc/boot/procnto-smp-instr  10r RECEIVE        1                           
+
+
+       1  16 /proc/boot/procnto-smp-instr  10r RECEIVE        1                           
+
+
+       1  17 /proc/boot/procnto-smp-instr  10r RECEIVE        1                           
+
+
+       1  18 /proc/boot/procnto-smp-instr  21r RECEIVE        1                           
+
+
+       1  19 /proc/boot/procnto-smp-instr  10r RECEIVE        1                           
+
+
+[md-capture] Frame #137 (Scen 1) | EOF->Capture: 7.7 µs | Jitter: 364.3 µs | PCE: 34.0 dB (2540 lin) | NCC: 0.788 | Status: VERIFIED_AUTHENTIC_SILICON
+
+
+       1  20 /proc/boot/procnto-smp-instr  10r RECEIVE        1                           
+
+
+[md-seal] Sealed Leaf #137 (Frame #137) | Leaf: 1a8331e9c0d52e1f... | Root: 228ee854d2065516... | Sig: 05dcd8dcdc2af1c5... | Journal: /data/mdfp_evidence
+
+
+       1  21 /proc/boot/procnto-smp-instr  10r RECEIVE        1                           
+
+
+       1  22 /proc/boot/procnto-smp-instr  10r RECEIVE        1                           
+
+
+   16386   1 bin/sh                        10r SIGSUSPEND

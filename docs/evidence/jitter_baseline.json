@@ -1,0 +1,15 @@
+{
+  "bin_0_2_us": 1,
+  "bin_2_4_us": 0,
+  "bin_4_6_us": 0,
+  "bin_6_8_us": 0,
+  "bin_8_10_us_deadline": 0,
+  "bin_10_20_us": 0,
+  "bin_20_50_us": 0,
+  "bin_50_100_us": 0,
+  "bin_100_1000_us": 1693,
+  "bin_gt_1000_us_anomaly": 622,
+  "mean_us": 5230.1699,
+  "min_us": 0.0,
+  "max_us": 501181.253
+}

@@ -1,0 +1,29 @@
+# QNX and C/C++ Build Artifacts
+bin/
+*.o
+*.elf
+*.so
+*.a
+
+# Logs and runtime data
+*.log
+/tmp/
+evidence/
+!docs/evidence/
+
+# Python Bytecode and Environments
+__pycache__/
+*.py[cod]
+*$py.class
+.env
+.env*
+node_modules/
+
+# Cryptographic Keys, Keypairs and Certificates
+*keypair*.json
+*.key
+*.pem
+
+# OS Files
+.DS_Store
+Thumbs.db
