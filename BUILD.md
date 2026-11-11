@@ -141,5 +141,5 @@ python3 host/anchor/md_anchor.py --journal-url http://127.0.0.1:9090/api/journal
 
 ## 7. Verification Status & Disclaimers
 
-* **Проверено в QEMU x86_64:** Сборка всех 7 бинарников, QNX IPC (`MsgSend`, `MsgReceive`, `MsgSendPulse`), запуск в QNX Neutrino 8.0, lock-free `seqlock` на `/mdfp_stats_shm`, сценарии атак 1–6, аудит верификатором `md_verify_cli.py`, трансляция транзакции в Solana Mainnet.
-* **Не проверено на физическом железе:** Работа с физическим CSI-2 драйвером камеры (Sony IMX390) и физический аппаратный крипточип TPM 2.0 / HSM (вынесено в производственный roadmap).
+* **Verified in QEMU x86_64:** Compilation of all 7 native binaries, QNX IPC (`MsgSend`, `MsgReceive`, `MsgSendPulse`), execution in QNX Neutrino 8.0, lock-free `seqlock` on `/mdfp_stats_shm`, attack scenarios 1–6, audit via `md_verify_cli.py`, and ledger anchoring to Solana Mainnet.
+* **Unverified on bare-metal silicon:** Interfacing with physical automotive CSI-2 camera hardware (Sony IMX390) and hardware cryptographic co-processor TPM 2.0 / HSM (scheduled on production roadmap).

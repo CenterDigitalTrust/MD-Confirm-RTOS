@@ -18,7 +18,7 @@ Built for the QNX Global Hackathon. Not affiliated with BlackBerry or QNX.
 
 ---
 
-## 2. Границы применимости (Boundaries of Applicability) & Threat Model
+## 2. Boundaries of Applicability & Threat Model
 
 In mission-critical embedded systems and forensic computing, acknowledging threat limits and boundaries is a hallmark of architectural honesty:
 
@@ -43,6 +43,8 @@ In mission-critical embedded systems and forensic computing, acknowledging threa
 ---
 
 ## 3. Native QNX 8.0 Microkernel Architecture
+
+![MD-Confirm RTOS Architecture](docs/architecture.svg)
 
 MD-Confirm RTOS leverages QNX Neutrino's true microkernel architecture, splitting security responsibilities into 7 isolated processes communicating via native IPC:
 
