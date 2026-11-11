@@ -69,7 +69,7 @@ MD-Confirm RTOS leverages QNX Neutrino's true microkernel architecture, splittin
 flowchart TD
     subgraph SENSOR_DOMAIN["Sensor & Ingestion Domain (Hard Real-Time)"]
         SIM["md-sensor-sim<br/>(Normal)<br/>Raw Bayer Frame + PRNU"]
-        CAP["md-capture<br/>(SCHED_FIFO 21)<br/>Zero-Copy DMA & ClockCycles()"]
+        CAP["md-capture<br/>(SCHED_FIFO 21)<br/>Shared Memory Ingestion & ClockCycles()"]
     end
 
     subgraph CRYPTO_DOMAIN["Verification & Cryptographic Domain"]
