@@ -32,7 +32,7 @@
 #include "../common/mdfp_protocol.h"
 #include "../common/mdfp_crypto.h"
 
-static std::string g_bind_ip = "0.0.0.0";
+static std::string g_bind_ip = "127.0.0.1";
 static int g_bind_port = 9090;
 static std::string g_journal_path = MDFP_PERSISTENT_JOURNAL_PATH;
 
