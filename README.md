@@ -88,7 +88,7 @@ flowchart TD
 ```
 
 ### Safety Decoupling (Real-Time vs Network Serving):
-* **Strict Real-Time Isolation (`md-capture`):** Runs at a **высокий приоритет реального времени** (`SCHED_FIFO 21`). It contains **zero** network sockets or client threads. Frame ingestion and `ClockCycles()` measurement cannot be interrupted by network traffic.
+* **Strict Real-Time Isolation (`md-capture`):** Runs at a **high real-time priority»** (`SCHED_FIFO 21`). It contains **zero** network sockets or client threads. Frame ingestion and `ClockCycles()` measurement cannot be interrupted by network traffic.
 * **Lock-Free Seqlock IPC (`/mdfp_stats_shm`):** `md-capture` updates telemetry and jitter metrics using a lock-free sequential lock (`seqlock`). The writer increments an atomic sequence counter before and after copying data (odd = write in progress; even = valid snapshot). `md-capture` never waits, takes mutexes, or yields to background readers.
 * **Low-Priority Read-Only Telemetry (`md-telemetry`):** Runs at background priority `SCHED_RR 8` (`MDFP_PRIO_TELEMETRY`), listening on `0.0.0.0:9090` (configurable via `--bind`).
   * **Memory Isolation:** Maps `/mdfp_stats_shm` strictly read-only (`PROT_READ`). Readers retry reads if the writer was active.
