@@ -6,7 +6,7 @@ Built for the QNX Global Hackathon. Not affiliated with BlackBerry or QNX.
 ![QNX SDP 8.0](https://img.shields.io/badge/QNX_SDP-8.0_Verified-3fb950?style=flat-square)
 ![Runtime](https://img.shields.io/badge/Runtime-QEMU_x86__64_(SIMULATED)-d29922?style=flat-square)
 ![Solana Mainnet](https://img.shields.io/badge/Solana-Mainnet--Beta_Anchored-8957e5?style=flat-square)
-![License](https://img.shields.io/badge/License-Apache_2.0-58a6ff?style=flat-square)
+[![License](https://img.shields.io/badge/License-BUSL--1.1-58a6ff?style=flat-square)](LICENSE)
 
 **Hackathon Entry:** BlackBerry QNX Global Hackathon 2026  
 **Author:** `miracledropletmd` ([Center for Digital Trust](https://github.com/CenterDigitalTrust/MD-Confirm-RTOS))  
@@ -246,3 +246,14 @@ python3 host/verify-cli/md_verify_cli.py \
 * We do **NOT** claim ASIL-D or SIL 3 certification.
 * We do **NOT** claim hardware cryptographic key protection (`FileSigner` software keys only; `HardwareTokenSignerStub` is `ROADMAP`; `swtpm` is software emulation only).
 * We do **NOT** claim WORM storage immutability, physical scene depth authentication, or real-camera PRNU ROC curves (`NOT YET MEASURED`).
+
+---
+
+## 11. License (`BUSL-1.1`)
+
+**MD-Confirm RTOS** is licensed under the **Business Source License 1.1 (`BUSL-1.1`)** — see [`LICENSE`](LICENSE):
+
+* **Licensor:** Center for Digital Trust (`admin@digitaltrust.living`)
+* **Additional Use Grant:** `None` (non-production, evaluation, testing, academic, and research use permitted; any production or commercial deployment requires a commercial license from Licensor)
+* **Change Date:** `2030-11-13` (maximum 4-year conversion period)
+* **Change License:** `MIT License` (automatically applies on the Change Date)
