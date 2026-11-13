@@ -13,9 +13,11 @@
 #endif
 
 #include <stdint.h>
+#include <errno.h>
 #include <unistd.h>
 #include <time.h>
 #include <sys/neutrino.h>
+#include <sys/dispatch.h>
 #include <sys/syspage.h>
 #include <string.h>
 
@@ -185,4 +187,59 @@ static inline uint64_t mdfp_get_ns() {
     struct timespec ts;
     clock_gettime(CLOCK_MONOTONIC, &ts);
     return (uint64_t)ts.tv_sec * 1000000000ULL + ts.tv_nsec;
+}
+
+static inline int mdfp_qnx_is_stale_coid_errno(int err) {
+    return err == ESRCH || err == EBADF || err == ECONNRESET || err == EPIPE;
+}
+
+static inline int mdfp_qnx_reopen_channel(int* coid, const char* attach_name) {
+    if (!coid || !attach_name) return -1;
+    if (*coid >= 0) {
+        name_close(*coid);
+        *coid = -1;
+    }
+    *coid = name_open(attach_name, 0);
+    return *coid;
+}
+
+static inline int mdfp_qnx_send_retry(
+    int* coid,
+    const char* attach_name,
+    const void* msg,
+    size_t msg_bytes,
+    void* reply,
+    size_t reply_bytes) {
+    if (!coid || !attach_name) return -1;
+    if (*coid < 0) {
+        *coid = name_open(attach_name, 0);
+    }
+    if (*coid < 0) return -1;
+    int status = MsgSend(*coid, msg, msg_bytes, reply, reply_bytes);
+    if (status < 0 && mdfp_qnx_is_stale_coid_errno(errno)) {
+        if (mdfp_qnx_reopen_channel(coid, attach_name) >= 0) {
+            status = MsgSend(*coid, msg, msg_bytes, reply, reply_bytes);
+        }
+    }
+    return status;
+}
+
+static inline int mdfp_qnx_send_pulse_retry(
+    int* coid,
+    const char* attach_name,
+    int prio,
+    int code,
+    int value) {
+    if (!coid || !attach_name) return -1;
+    if (*coid < 0) {
+        *coid = name_open(attach_name, 0);
+    }
+    if (*coid < 0) return -1;
+    int status = MsgSendPulse(*coid, prio, code, value);
+    if (status < 0 && mdfp_qnx_is_stale_coid_errno(errno)) {
+        if (mdfp_qnx_reopen_channel(coid, attach_name) >= 0) {
+            status = MsgSendPulse(*coid, prio, code, value);
+        }
+    }
+    return status;
 }

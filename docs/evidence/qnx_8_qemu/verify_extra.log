@@ -1,0 +1,10 @@
+========================================================
+ [md-verify] Statistical PRNU & PCE Correlation Engine  
+ Ingestion: Private IPC Frame Snapshot + SHA-256 Re-Check
+ PCE Units: Dimensionless energy ratio (literature std) 
+ Thresholds: PCE >= 60, NCC >= 0.75
+ Extra Signals (SIMULATED, off by default): ENABLED
+========================================================
+
+[md-verify] Registered QNX channel: mdfp_verify
+[md-verify] Connected to md-seal! coid=1073741826

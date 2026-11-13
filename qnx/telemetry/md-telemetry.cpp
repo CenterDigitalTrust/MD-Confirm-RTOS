@@ -4,8 +4,12 @@
 // Principle of Least Privilege: Read-Only access to SHM, zero access to private signing keys.
 // Project: MD-Confirm RTOS (QNX Global Hackathon) | Track: Automotive & Mobility
 
+#ifndef _QNX_SOURCE
 #define _QNX_SOURCE
+#endif
+#ifndef _POSIX_C_SOURCE
 #define _POSIX_C_SOURCE 200809L
+#endif
 
 #include <iostream>
 #include <iomanip>
@@ -311,6 +315,23 @@ int main(int argc, char** argv) {
             std::string verdict_str(snap.last_verdict, strnlen(snap.last_verdict, sizeof(snap.last_verdict)));
             std::string sha_str(snap.last_frame_sha256, strnlen(snap.last_frame_sha256, sizeof(snap.last_frame_sha256)));
 
+            const char* mode_str = "waiting";
+            if (valid) {
+                switch (snap.last_scenario) {
+                    case SCENARIO_1_NATIVE_SENSOR:       mode_str = "capture"; break;
+                    case SCENARIO_2_FOREIGN_SENSOR:      mode_str = "rogue_silicon"; break;
+                    case SCENARIO_3_SYNTHETIC_NO_PRNU:   mode_str = "deepfake"; break;
+                    case SCENARIO_4_SYNTHETIC_WITH_PRNU: mode_str = "synth_with_prnu"; break;
+                    case SCENARIO_5_CABLE_SABOTAGE:      mode_str = "ghost"; break;
+                    case SCENARIO_7_REPLAY_FRAME:        mode_str = "replay"; break;
+                    case SCENARIO_8_SEQ_TIMING_ANOMALY:  mode_str = "seq_timing_anomaly"; break;
+                    default:                             mode_str = "boundary"; break;
+                }
+            }
+            bool allow_merkle = valid &&
+                (verdict_str == "VERIFIED_AUTHENTIC_SILICON" ||
+                 verdict_str == "BOUNDARY_PRNU_PASSED_CADENCE_FLAGGED");
+
             std::ostringstream json;
             json << std::fixed << std::setprecision(4)
                  << "{"
@@ -318,10 +339,10 @@ int main(int argc, char** argv) {
                  << "\"rtos_kernel\":" << mdfp::jcs::encode_string(kernel_str) << ","
                  << "\"architecture\":\"BlackBerry QNX Neutrino RTOS 8.0 (Microkernel)\","
                  << "\"category\":\"Automotive & Mobility (ADAS Black Box)\","
-                 << "\"mode\":\"" << (valid ? (snap.last_scenario == 1 ? "capture" : (snap.last_scenario == 2 ? "rogue_silicon" : (snap.last_scenario == 3 ? "deepfake" : (snap.last_scenario == 5 ? "ghost" : "boundary")))) : "waiting") << "\","
+                 << "\"mode\":\"" << mode_str << "\","
                  << "\"scenario_id\":" << (valid ? snap.last_scenario : 0) << ","
                  << "\"verdict\":" << mdfp::jcs::encode_string(valid ? verdict_str : std::string("WAITING_FRAMES")) << ","
-                 << "\"allow_merkle\":" << ((valid && (snap.last_scenario == 1 || snap.last_scenario == 4)) ? "true" : "false") << ","
+                 << "\"allow_merkle\":" << (allow_merkle ? "true" : "false") << ","
                  << "\"prnu_correlation\":" << (valid ? snap.last_ncc : 0.0) << ","
                  << "\"prnu_threshold\":0.7500,"
                  << "\"pce_linear\":" << (valid ? snap.last_pce_linear : 0.0) << ","

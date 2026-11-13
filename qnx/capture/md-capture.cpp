@@ -2,14 +2,19 @@
 // Hard Real-Time Camera Ingestion & Timing Engine (ASIL-D Compliant Microkernel Thread)
 // Project: MD-Confirm RTOS (QNX Global Hackathon) | Track: Automotive & Mobility
 
+#ifndef _QNX_SOURCE
 #define _QNX_SOURCE
+#endif
+#ifndef _POSIX_C_SOURCE
 #define _POSIX_C_SOURCE 200809L
+#endif
 
 #include <iostream>
 #include <iomanip>
 #include <memory>
 #include <cstring>
 #include <cstdlib>
+#include <cerrno>
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/mman.h>
@@ -65,8 +70,8 @@ int main() {
     MdfpStatsPayload local_stats{};
     local_stats.magic = MDFP_MAGIC;
     local_stats.hist_min_us = 999999.0;
-    std::strncpy(local_stats.last_verdict, "WAITING_FRAMES", sizeof(local_stats.last_verdict) - 1);
-    std::strncpy(local_stats.last_frame_sha256, "0000000000000000000000000000000000000000000000000000000000000000", sizeof(local_stats.last_frame_sha256) - 1);
+    mdfp::ingest::copy_cstr_bounded(local_stats.last_verdict, sizeof(local_stats.last_verdict), "WAITING_FRAMES");
+    mdfp::ingest::copy_cstr_bounded(local_stats.last_frame_sha256, sizeof(local_stats.last_frame_sha256), "0000000000000000000000000000000000000000000000000000000000000000");
     if (stats && stats != MAP_FAILED) {
         mdfp_seqlock_init(stats, local_stats);
         std::cout << "[md-capture] Initialized atomic seqlock stats shm: " << MDFP_STATS_SHM_NAME << std::endl;
@@ -96,11 +101,21 @@ int main() {
 
     while (true) {
         struct _pulse pulse;
+        std::memset(&pulse, 0, sizeof(pulse));
         int rcvid = MsgReceive(attach->chid, &pulse, sizeof(pulse), nullptr);
         if (rcvid < 0) continue;
 
-        if (rcvid == 0) {
-            if (pulse.code == MDFP_PULSE_EOF_IRQ) {
+        if (rcvid > 0) {
+            MsgError(rcvid, ENOSYS);
+            continue;
+        }
+
+        if (pulse.code == _PULSE_CODE_DISCONNECT) {
+            ConnectDetach(pulse.scoid);
+            continue;
+        }
+
+        if (pulse.code == MDFP_PULSE_EOF_IRQ) {
                 uint64_t capture_wakeup_cycles = ClockCycles();
                 uint64_t capture_wakeup_ns = mdfp_get_ns();
                 uint32_t seq = pulse.value.sival_int;
@@ -166,34 +181,36 @@ int main() {
                 }
                 prev_eof_ns = hw_eof_ns;
 
-                // Send heartbeat to watchdog
-                if (watchdog_coid >= 0) {
-                    MsgSendPulse(watchdog_coid, 10, MDFP_PULSE_WATCHDOG_HEART, seq);
-                }
+                // Send heartbeat to watchdog (auto-reconnect if watchdog restarted)
+                mdfp_qnx_send_pulse_retry(&watchdog_coid, MDFP_ATTACH_WATCHDOG, 10, MDFP_PULSE_WATCHDOG_HEART, seq);
 
                 // Forward private snapshot + SHA-256 + seq + capture cycle count via MsgSend()
-                if (verify_coid >= 0) {
-                    std::memset(verify_msg.get(), 0, sizeof(*verify_msg));
-                    verify_msg->type = 0x0100;
-                    verify_msg->subtype = 0x0001;
-                    verify_msg->frame_seq = seq;
-                    verify_msg->scenario = scenario;
-                    verify_msg->hw_eof_cycles = hw_eof_cycles;
-                    verify_msg->hw_eof_ns = hw_eof_ns;
-                    verify_msg->capture_wakeup_cycles = capture_wakeup_cycles;
-                    verify_msg->capture_wakeup_ns = capture_wakeup_ns;
-                    verify_msg->width = snapshot->width;
-                    verify_msg->height = snapshot->height;
-                    verify_msg->payload_bytes = snapshot->payload_bytes;
-                    mdfp::ingest::copy_cstr_bounded(
-                        verify_msg->sensor_id, sizeof(verify_msg->sensor_id), snapshot->sensor_id);
-                    mdfp::ingest::copy_cstr_bounded(
-                        verify_msg->frame_sha256, sizeof(verify_msg->frame_sha256), snapshot->frame_sha256);
-                    std::memcpy(verify_msg->bayer_raw, snapshot->bayer_raw, MDFP_RAW_BYTES);
+                // Auto-reconnects to md-verify if it restarted (e.g. toggling --extra-signals).
+                std::memset(verify_msg.get(), 0, sizeof(*verify_msg));
+                verify_msg->type = 0x0100;
+                verify_msg->subtype = 0x0001;
+                verify_msg->frame_seq = seq;
+                verify_msg->scenario = scenario;
+                verify_msg->hw_eof_cycles = hw_eof_cycles;
+                verify_msg->hw_eof_ns = hw_eof_ns;
+                verify_msg->capture_wakeup_cycles = capture_wakeup_cycles;
+                verify_msg->capture_wakeup_ns = capture_wakeup_ns;
+                verify_msg->width = snapshot->width;
+                verify_msg->height = snapshot->height;
+                verify_msg->payload_bytes = snapshot->payload_bytes;
+                mdfp::ingest::copy_cstr_bounded(
+                    verify_msg->sensor_id, sizeof(verify_msg->sensor_id), snapshot->sensor_id);
+                mdfp::ingest::copy_cstr_bounded(
+                    verify_msg->frame_sha256, sizeof(verify_msg->frame_sha256), snapshot->frame_sha256);
+                std::memcpy(verify_msg->bayer_raw, snapshot->bayer_raw, MDFP_RAW_BYTES);
 
-                    MdfpVerifyReply reply;
-                    int status = MsgSend(verify_coid, verify_msg.get(), sizeof(*verify_msg), &reply, sizeof(reply));
-                    if (status >= 0) {
+                MdfpVerifyReply reply;
+                std::memset(&reply, 0, sizeof(reply));
+                int status = mdfp_qnx_send_retry(
+                    &verify_coid, MDFP_ATTACH_VERIFY,
+                    verify_msg.get(), sizeof(*verify_msg),
+                    &reply, sizeof(reply));
+                if (status >= 0) {
                         // Reuse the exact private-copy SHA-256 (zero second SHM read).
                         // Atomic Seqlock Update for Lock-Free Reader md-telemetry
                         local_stats.last_frame_seq = seq;
@@ -246,9 +263,7 @@ int main() {
                                   << " | PCE: " << reply.pce_db << " dB (" << (int)reply.pce_linear << " lin)"
                                   << " | NCC: " << std::setprecision(3) << reply.ncc
                                   << " | Status: " << reply.verdict << std::endl;
-                    }
                 }
-            }
         }
     }
 

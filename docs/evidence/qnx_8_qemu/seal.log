@@ -1,0 +1,73 @@
+========================================================
+ [md-seal] Merkle Tree (RFC 6962) & Ed25519 (RFC 8032)  
+ Signer Backend: FileSigner(software-TweetNaCl, NO-hardware-protection)
+ Key File (0600): /data/mdfp_evidence/device_ed25519.key
+ Public Key     : 7ea81ac6c1fc3a9a567a7693e3d930a5c140a3a05fa270d763f291160696a468
+========================================================
+
+[md-seal] Registered QNX channel: mdfp_seal
+[md-seal] Sealed Leaf #1 (Frame #1) | Leaf: dabbfcab42377fbd... | Root: dabbfcab42377fbd... | Sig: ad470ea7692202ec... | Journal: /data/mdfp_evidence
+[md-seal] Sealed Leaf #2 (Frame #2) | Leaf: 2ae1a28a6f5c6f4e... | Root: 715a9b966116decc... | Sig: c2a331354443b74e... | Journal: /data/mdfp_evidence
+[md-seal] Sealed Leaf #3 (Frame #3) | Leaf: f43b76b5bdf2d87d... | Root: 1f196c7461a3311e... | Sig: e27834022e417bd3... | Journal: /data/mdfp_evidence
+[md-seal] Sealed Leaf #4 (Frame #4) | Leaf: c2cf0311943f13fe... | Root: fb8196078b607c7f... | Sig: f82453c4edddb742... | Journal: /data/mdfp_evidence
+[md-seal] Sealed Leaf #5 (Frame #5) | Leaf: 52b6f8c49476f6cf... | Root: e6a8aed1144d708b... | Sig: 0eff00edf1750d3e... | Journal: /data/mdfp_evidence
+[md-seal] Sealed Leaf #6 (Frame #6) | Leaf: e5c75adb7d5df41f... | Root: 472c6afe7fa44b78... | Sig: d62bcde58fe070d1... | Journal: /data/mdfp_evidence
+[md-seal] Sealed Leaf #7 (Frame #7) | Leaf: 72ba66cd0592b4c7... | Root: 92777cef879749e0... | Sig: 024b4fd784b68e42... | Journal: /data/mdfp_evidence
+[md-seal] Sealed Leaf #8 (Frame #8) | Leaf: afa548535d4b9c13... | Root: 458a53086f20254c... | Sig: e0135020f205efc7... | Journal: /data/mdfp_evidence
+[md-seal] Sealed Leaf #9 (Frame #9) | Leaf: 6301bbccd0fd7464... | Root: 1798914f5bed930a... | Sig: 97ec74b2d37163b6... | Journal: /data/mdfp_evidence
+[md-seal] Sealed Leaf #10 (Frame #10) | Leaf: 45e5a633b216ddb7... | Root: 965a26697c12bace... | Sig: f1bcb2cf0f82e8d5... | Journal: /data/mdfp_evidence
+[md-seal] Sealed Leaf #11 (Frame #11) | Leaf: 9d991814746964e6... | Root: c98d5c7149cd2ad4... | Sig: 3305495c485e8c56... | Journal: /data/mdfp_evidence
+[md-seal] Sealed Leaf #12 (Frame #12) | Leaf: cc20ec126895b239... | Root: bb30a2681690ad33... | Sig: 13495de23d3135ed... | Journal: /data/mdfp_evidence
+[md-seal] Sealed Leaf #13 (Frame #13) | Leaf: bae1086d753ec9ad... | Root: 9e41a51ca9a3a4d5... | Sig: 1ec2f7dc8977a92f... | Journal: /data/mdfp_evidence
+[md-seal] Sealed Leaf #14 (Frame #14) | Leaf: a54f88b176bde6bf... | Root: 61777f05ec37601d... | Sig: efa73b1f3cf4fbde... | Journal: /data/mdfp_evidence
+[md-seal] Sealed Leaf #15 (Frame #15) | Leaf: f3ad99c848b2fc4f... | Root: 8b1116597e14df6e... | Sig: 158c721cb7b2a335... | Journal: /data/mdfp_evidence
+[md-seal] Sealed Leaf #16 (Frame #16) | Leaf: e9290f5bf8acfca8... | Root: f6a6fbc5abb950cc... | Sig: 062f20af675cf50b... | Journal: /data/mdfp_evidence
+[md-seal] Sealed Leaf #17 (Frame #17) | Leaf: d51c9262917ae53e... | Root: da3afeb2c33e4cd6... | Sig: fdc0ca5fb760ce7c... | Journal: /data/mdfp_evidence
+[md-seal] Sealed Leaf #18 (Frame #18) | Leaf: d51f5c57160f0eeb... | Root: 84792b21d83496d4... | Sig: 7460bddad0b26715... | Journal: /data/mdfp_evidence
+[md-seal] Sealed Leaf #19 (Frame #19) | Leaf: 6b6cf753889560f5... | Root: 6407aa1e6036ecdf... | Sig: 7c5aa71671f7f5c8... | Journal: /data/mdfp_evidence
+[md-seal] Sealed Leaf #20 (Frame #20) | Leaf: cfc9c9448a375b27... | Root: cdfed4a52fd105e2... | Sig: 8574631c2d6c2f96... | Journal: /data/mdfp_evidence
+[md-seal] Sealed Leaf #21 (Frame #21) | Leaf: 0df812d28bfb144f... | Root: feb45d2a3da6f7a7... | Sig: 373e8c51f918e920... | Journal: /data/mdfp_evidence
+[md-seal] Sealed Leaf #22 (Frame #22) | Leaf: ee5c97abc6e20048... | Root: 30c62f78b715082d... | Sig: 2843b72ab9225106... | Journal: /data/mdfp_evidence
+[md-seal] Sealed Leaf #23 (Frame #23) | Leaf: cc31d9ca0813f77f... | Root: 9742e8e53408c3a2... | Sig: 5d79d06383eab0a6... | Journal: /data/mdfp_evidence
+[md-seal] Sealed Leaf #24 (Frame #24) | Leaf: 01375fc5f838776b... | Root: d0c4aff7b783b743... | Sig: 5fb26c164f2f14f9... | Journal: /data/mdfp_evidence
+[md-seal] Sealed Leaf #25 (Frame #25) | Leaf: 72a755aa71c9d4e2... | Root: e2c77ab2791768bf... | Sig: ace1dbe774e42220... | Journal: /data/mdfp_evidence
+[md-seal] Sealed Leaf #26 (Frame #26) | Leaf: de1eb20adffc0660... | Root: 9eba7548efe39bae... | Sig: 78982927682f528f... | Journal: /data/mdfp_evidence
+[md-seal] Sealed Leaf #27 (Frame #27) | Leaf: 2cd6e32fa8604d80... | Root: eb040e3a8f8b4995... | Sig: 01464c291019afba... | Journal: /data/mdfp_evidence
+[md-seal] Sealed Leaf #28 (Frame #28) | Leaf: 592eb9d33d6e7810... | Root: 2c48eb182c910c10... | Sig: 139c920cac380234... | Journal: /data/mdfp_evidence
+[md-seal] Sealed Leaf #29 (Frame #29) | Leaf: dc47bdd77c03207b... | Root: 896762545b333dd9... | Sig: 4161959da347f467... | Journal: /data/mdfp_evidence
+[md-seal] Sealed Leaf #30 (Frame #30) | Leaf: 41b1eaa8bd016e71... | Root: 256e76544b87def8... | Sig: 4694a91c4ec97f53... | Journal: /data/mdfp_evidence
+[md-seal] Sealed Leaf #31 (Frame #31) | Leaf: 12fef32d4aa6965d... | Root: 1dfb5349e4091cc6... | Sig: c05d8589d505f1ad... | Journal: /data/mdfp_evidence
+[md-seal] Sealed Leaf #32 (Frame #32) | Leaf: 161438bc355f8956... | Root: 202fe2cb152692b2... | Sig: 8346eafd64a268e0... | STH+OUTBOX: YES | Journal: /data/mdfp_evidence
+[md-seal] Sealed Leaf #33 (Frame #33) | Leaf: 7da3347755ba06b2... | Root: f576a3331d40c2d9... | Sig: df0a2404a9a914cb... | STH+OUTBOX: YES | Journal: /data/mdfp_evidence
+[md-seal] Sealed Leaf #34 (Frame #11) | Leaf: c1092433e906eca6... | Root: 3a312fbd3727c10f... | Sig: cc6328138d296e5f... | STH+OUTBOX: YES | Journal: /data/mdfp_evidence
+[md-seal] Sealed Leaf #35 (Frame #11) | Leaf: 4d05cdd938ea0664... | Root: b60d75da303be755... | Sig: e70fd7c2e4165a71... | STH+OUTBOX: YES | Journal: /data/mdfp_evidence
+[md-seal] Sealed Leaf #36 (Frame #1) | Leaf: b9a5a9a275b83b6c... | Root: 963d0672c58a4871... | Sig: 58aed2696b863249... | Journal: /data/mdfp_evidence
+[md-seal] Sealed Leaf #37 (Frame #2) | Leaf: bea7a688d1457131... | Root: 518d74e8ae1a969f... | Sig: 3db70ee5e4737dd3... | Journal: /data/mdfp_evidence
+[md-seal] Sealed Leaf #38 (Frame #3) | Leaf: b25337b3e8134959... | Root: d98eae075ae856ec... | Sig: 82821ed0748d8be3... | STH+OUTBOX: YES | Journal: /data/mdfp_evidence
+[md-seal] Sealed Leaf #39 (Frame #100) | Leaf: 91ade0f2009ed59a... | Root: 470ab904a55e233b... | Sig: 3d64f57ce673327c... | Journal: /data/mdfp_evidence
+[md-seal] Sealed Leaf #40 (Frame #101) | Leaf: b65cc4d010f094e4... | Root: 893c25d8dbcbd8a1... | Sig: 27697eac70a026e2... | Journal: /data/mdfp_evidence
+[md-seal] Sealed Leaf #41 (Frame #102) | Leaf: efa1c45c78e10dfc... | Root: f12cb43a7661942c... | Sig: 99cdd73621377542... | Journal: /data/mdfp_evidence
+[md-seal] Sealed Leaf #42 (Frame #103) | Leaf: 3dfa4b417c9443fb... | Root: 1f04a86514962f44... | Sig: 6d0089136f41abfb... | Journal: /data/mdfp_evidence
+[md-seal] Sealed Leaf #43 (Frame #104) | Leaf: 2bc758d0e439ad5a... | Root: 955749aa5da6f13a... | Sig: 597c50f0af884cd5... | Journal: /data/mdfp_evidence
+[md-seal] Sealed Leaf #44 (Frame #105) | Leaf: 5135cf94c356cedf... | Root: a64fa439c24298f6... | Sig: dc9e8997c0453641... | Journal: /data/mdfp_evidence
+[md-seal] Sealed Leaf #45 (Frame #106) | Leaf: fafc2f1ee0f206c4... | Root: 1a6a2cfb0c0a007f... | Sig: 5b1c5450c4c84df5... | Journal: /data/mdfp_evidence
+[md-seal] Sealed Leaf #46 (Frame #107) | Leaf: d31c86c0e8a3dc96... | Root: 1842129f23f45aeb... | Sig: a76f000ab1ff7233... | Journal: /data/mdfp_evidence
+[md-seal] Sealed Leaf #47 (Frame #108) | Leaf: fd1caebc043c8e78... | Root: 744fa5d646c77460... | Sig: e0dca816ee5710ca... | Journal: /data/mdfp_evidence
+[md-seal] Sealed Leaf #48 (Frame #109) | Leaf: 7cda5237010c3fde... | Root: 8a25f32a5b2b8aae... | Sig: ac547e7ef3a8b733... | Journal: /data/mdfp_evidence
+[md-seal] Sealed Leaf #49 (Frame #110) | Leaf: 9f4e47466404da80... | Root: 30752d877f222359... | Sig: 353ecb8f2d5a0f76... | Journal: /data/mdfp_evidence
+[md-seal] Sealed Leaf #50 (Frame #111) | Leaf: 1ab9df4c42204329... | Root: 7620587055bf30a2... | Sig: 4f04ec640e04dd6e... | Journal: /data/mdfp_evidence
+[md-seal] Sealed Leaf #51 (Frame #112) | Leaf: b8f4b0dc39874f46... | Root: 44376e7a793bc9c7... | Sig: 2409a241422e64b5... | Journal: /data/mdfp_evidence
+[md-seal] Sealed Leaf #52 (Frame #113) | Leaf: 2fbd6053ec829ffe... | Root: a99d3bd72159f9a0... | Sig: fe02004e5dcf04a0... | Journal: /data/mdfp_evidence
+[md-seal] Sealed Leaf #53 (Frame #114) | Leaf: 28a9722c7ebb11b8... | Root: 8a1f2ad564ea3672... | Sig: a5178ba1623eb5c1... | Journal: /data/mdfp_evidence
+[md-seal] Sealed Leaf #54 (Frame #115) | Leaf: 42c5d58c9fa34c03... | Root: a9bf6fd7018e167c... | Sig: d4a04170044a28cb... | Journal: /data/mdfp_evidence
+[md-seal] Sealed Leaf #55 (Frame #116) | Leaf: d6cd965a99c64ed6... | Root: 29a1b28071718242... | Sig: f83153e07287f80f... | Journal: /data/mdfp_evidence
+[md-seal] Sealed Leaf #56 (Frame #117) | Leaf: ccc457df5f273f29... | Root: 4a4f740055dd5489... | Sig: f6bac81a3b202f6a... | Journal: /data/mdfp_evidence
+[md-seal] Sealed Leaf #57 (Frame #118) | Leaf: b2cbc15c7fdd717b... | Root: 49e874fd157b90e8... | Sig: 4d3d8c41685805f3... | Journal: /data/mdfp_evidence
+[md-seal] Sealed Leaf #58 (Frame #119) | Leaf: 47ba625caf71f856... | Root: c32960353eb46ba9... | Sig: 0530461d88b6068d... | Journal: /data/mdfp_evidence
+[md-seal] Sealed Leaf #59 (Frame #120) | Leaf: 00f5d860a32a24d0... | Root: 65624977024237c6... | Sig: f2c0da96d4963de9... | Journal: /data/mdfp_evidence
+[md-seal] Sealed Leaf #60 (Frame #121) | Leaf: babb659d4173aa00... | Root: 5b372db044605266... | Sig: 28c29b675cbd2019... | Journal: /data/mdfp_evidence
+[md-seal] Sealed Leaf #61 (Frame #122) | Leaf: 0efa82797f1104c8... | Root: 546b5e9f01335ef4... | Sig: e78ecaa95a429efb... | STH+OUTBOX: YES | Journal: /data/mdfp_evidence
+[md-seal] Sealed Leaf #62 (Frame #127) | Leaf: e1287d86199a5f5a... | Root: 7677871224127dae... | Sig: f3d64a365799753b... | STH+OUTBOX: YES | Journal: /data/mdfp_evidence
+[md-seal] Sealed Leaf #63 (Frame #128) | Leaf: eb00404c444b40aa... | Root: cfdda36ff2ccfb0e... | Sig: 4df5d77b576af6bf... | STH+OUTBOX: YES | Journal: /data/mdfp_evidence
+[md-seal] Sealed Leaf #64 (Frame #139) | Leaf: 6889b54a1e0975e9... | Root: c8c6f8a541485b11... | Sig: 7fb2093484abb115... | STH+OUTBOX: YES | Journal: /data/mdfp_evidence
+[md-seal] Sealed Leaf #65 (Frame #143) | Leaf: dcb67e81015fedae... | Root: 6b4fbea194dce831... | Sig: 99cb159bc2d168e4... | STH+OUTBOX: YES | Journal: /data/mdfp_evidence

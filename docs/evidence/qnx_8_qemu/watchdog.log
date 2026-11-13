@@ -1,0 +1,92 @@
+========================================================
+ [md-watchdog] Hardware Sabotage & Cable-Cut Watchdog   
+ QNX Technology: timer_create + SIGEV_PULSE             
+ Timeout: 50 ms (detects missing frame at 30 fps)       
+ Action: Emergency Evidence Sealing (GHOST_EVENT)       
+========================================================
+
+[md-watchdog] Registered QNX channel: mdfp_watchdog
+[md-watchdog] Connected to md-seal! coid=1073741826
+[md-watchdog] Hardware watchdog armed (10 ms tick).
+
+
+************************************************************************
+ [!] EMERGENCY WATCHDOG ALARM: SENSOR DISCONNECT / CABLE CUT DETECTED!   
+ Elapsed Time Without Frame Pulse: 52 ms (> 50 ms limit)
+ Last Verified Frame Sequence: #32
+ Triggering Emergency Evidence Sealing (GHOST_EVENT_WATCHDOG)...       
+************************************************************************
+
+[md-watchdog] GHOST_EVENT sealed into Merkle Leaf #33 | Root: f576a3331d40c2d9...
+
+************************************************************************
+ [!] EMERGENCY WATCHDOG ALARM: SENSOR DISCONNECT / CABLE CUT DETECTED!   
+ Elapsed Time Without Frame Pulse: 81 ms (> 50 ms limit)
+ Last Verified Frame Sequence: #10
+ Triggering Emergency Evidence Sealing (GHOST_EVENT_WATCHDOG)...       
+************************************************************************
+
+[md-watchdog] GHOST_EVENT sealed into Merkle Leaf #34 | Root: 3a312fbd3727c10f...
+
+************************************************************************
+ [!] EMERGENCY WATCHDOG ALARM: SENSOR DISCONNECT / CABLE CUT DETECTED!   
+ Elapsed Time Without Frame Pulse: 79 ms (> 50 ms limit)
+ Last Verified Frame Sequence: #10
+ Triggering Emergency Evidence Sealing (GHOST_EVENT_WATCHDOG)...       
+************************************************************************
+
+[md-watchdog] GHOST_EVENT sealed into Merkle Leaf #35 | Root: b60d75da303be755...
+
+************************************************************************
+ [!] EMERGENCY WATCHDOG ALARM: SENSOR DISCONNECT / CABLE CUT DETECTED!   
+ Elapsed Time Without Frame Pulse: 57 ms (> 50 ms limit)
+ Last Verified Frame Sequence: #2
+ Triggering Emergency Evidence Sealing (GHOST_EVENT_WATCHDOG)...       
+************************************************************************
+
+[md-watchdog] GHOST_EVENT sealed into Merkle Leaf #38 | Root: d98eae075ae856ec...
+
+************************************************************************
+ [!] EMERGENCY WATCHDOG ALARM: SENSOR DISCONNECT / CABLE CUT DETECTED!   
+ Elapsed Time Without Frame Pulse: 51 ms (> 50 ms limit)
+ Last Verified Frame Sequence: #121
+ Triggering Emergency Evidence Sealing (GHOST_EVENT_WATCHDOG)...       
+************************************************************************
+
+[md-watchdog] GHOST_EVENT sealed into Merkle Leaf #61 | Root: 546b5e9f01335ef4...
+
+************************************************************************
+ [!] EMERGENCY WATCHDOG ALARM: SENSOR DISCONNECT / CABLE CUT DETECTED!   
+ Elapsed Time Without Frame Pulse: 50 ms (> 50 ms limit)
+ Last Verified Frame Sequence: #126
+ Triggering Emergency Evidence Sealing (GHOST_EVENT_WATCHDOG)...       
+************************************************************************
+
+[md-watchdog] GHOST_EVENT sealed into Merkle Leaf #62 | Root: 7677871224127dae...
+
+************************************************************************
+ [!] EMERGENCY WATCHDOG ALARM: SENSOR DISCONNECT / CABLE CUT DETECTED!   
+ Elapsed Time Without Frame Pulse: 50 ms (> 50 ms limit)
+ Last Verified Frame Sequence: #127
+ Triggering Emergency Evidence Sealing (GHOST_EVENT_WATCHDOG)...       
+************************************************************************
+
+[md-watchdog] GHOST_EVENT sealed into Merkle Leaf #63 | Root: cfdda36ff2ccfb0e...
+
+************************************************************************
+ [!] EMERGENCY WATCHDOG ALARM: SENSOR DISCONNECT / CABLE CUT DETECTED!   
+ Elapsed Time Without Frame Pulse: 55 ms (> 50 ms limit)
+ Last Verified Frame Sequence: #138
+ Triggering Emergency Evidence Sealing (GHOST_EVENT_WATCHDOG)...       
+************************************************************************
+
+[md-watchdog] GHOST_EVENT sealed into Merkle Leaf #64 | Root: c8c6f8a541485b11...
+
+************************************************************************
+ [!] EMERGENCY WATCHDOG ALARM: SENSOR DISCONNECT / CABLE CUT DETECTED!   
+ Elapsed Time Without Frame Pulse: 54 ms (> 50 ms limit)
+ Last Verified Frame Sequence: #142
+ Triggering Emergency Evidence Sealing (GHOST_EVENT_WATCHDOG)...       
+************************************************************************
+
+[md-watchdog] GHOST_EVENT sealed into Merkle Leaf #65 | Root: 6b4fbea194dce831...

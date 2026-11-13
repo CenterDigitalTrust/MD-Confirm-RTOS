@@ -1,0 +1,102 @@
+========================================================
+ [md-capture] Hard Real-Time Frame Ingestion Engine      
+ Policy: SCHED_FIFO Priority 21 (Hard IRQ Service)      
+ Decoupling: Zero Network Code (Pure Real-Time Path)    
+ Statistics Export: Seqlock Lock-Free SHM (/mdfp_stats_shm)
+========================================================
+
+[md-capture] Registered QNX channel: mdfp_capture
+[md-capture] Initialized atomic seqlock stats shm: /mdfp_stats_shm
+[md-capture] Connected to md-verify! coid=1073741826
+[md-capture] Connected to md-watchdog! coid=1073741827
+[md-capture] Frame #1 (Scen 1) | EOF->Capture: 54.0 µs | Jitter: 0.0 µs | PCE: 34.1 dB (2543 lin) | NCC: 0.788 | Status: VERIFIED_AUTHENTIC_SILICON
+[md-capture] Frame #2 (Scen 1) | EOF->Capture: 8.6 µs | Jitter: 1477.4 µs | PCE: 34.0 dB (2529 lin) | NCC: 0.786 | Status: VERIFIED_AUTHENTIC_SILICON
+[md-capture] Frame #3 (Scen 1) | EOF->Capture: 9.1 µs | Jitter: 476.4 µs | PCE: 34.0 dB (2534 lin) | NCC: 0.787 | Status: VERIFIED_AUTHENTIC_SILICON
+[md-capture] Frame #4 (Scen 1) | EOF->Capture: 51.0 µs | Jitter: 1134.8 µs | PCE: 34.1 dB (2550 lin) | NCC: 0.789 | Status: VERIFIED_AUTHENTIC_SILICON
+[md-capture] Frame #5 (Scen 1) | EOF->Capture: 9.5 µs | Jitter: 1278.5 µs | PCE: 34.0 dB (2538 lin) | NCC: 0.787 | Status: VERIFIED_AUTHENTIC_SILICON
+[md-capture] Frame #6 (Scen 1) | EOF->Capture: 9.3 µs | Jitter: 662.7 µs | PCE: 34.0 dB (2540 lin) | NCC: 0.788 | Status: VERIFIED_AUTHENTIC_SILICON
+[md-capture] Frame #7 (Scen 1) | EOF->Capture: 9.2 µs | Jitter: 564.4 µs | PCE: 34.1 dB (2545 lin) | NCC: 0.788 | Status: VERIFIED_AUTHENTIC_SILICON
+[md-capture] Frame #8 (Scen 1) | EOF->Capture: 9.2 µs | Jitter: 752.3 µs | PCE: 34.1 dB (2546 lin) | NCC: 0.788 | Status: VERIFIED_AUTHENTIC_SILICON
+[md-capture] Frame #9 (Scen 1) | EOF->Capture: 17.5 µs | Jitter: 2798.6 µs | PCE: 34.0 dB (2539 lin) | NCC: 0.787 | Status: VERIFIED_AUTHENTIC_SILICON
+[md-capture] Frame #10 (Scen 1) | EOF->Capture: 8.1 µs | Jitter: 430.9 µs | PCE: 34.0 dB (2538 lin) | NCC: 0.787 | Status: VERIFIED_AUTHENTIC_SILICON
+[md-capture] Frame #11 (Scen 1) | EOF->Capture: 9.5 µs | Jitter: 1815.0 µs | PCE: 34.0 dB (2540 lin) | NCC: 0.788 | Status: VERIFIED_AUTHENTIC_SILICON
+[md-capture] Frame #12 (Scen 1) | EOF->Capture: 8.4 µs | Jitter: 543.3 µs | PCE: 34.0 dB (2531 lin) | NCC: 0.786 | Status: VERIFIED_AUTHENTIC_SILICON
+[md-capture] Frame #13 (Scen 1) | EOF->Capture: 8.7 µs | Jitter: 696.9 µs | PCE: 34.0 dB (2532 lin) | NCC: 0.786 | Status: VERIFIED_AUTHENTIC_SILICON
+[md-capture] Frame #14 (Scen 1) | EOF->Capture: 8.3 µs | Jitter: 725.4 µs | PCE: 34.1 dB (2548 lin) | NCC: 0.789 | Status: VERIFIED_AUTHENTIC_SILICON
+[md-capture] Frame #15 (Scen 1) | EOF->Capture: 61.8 µs | Jitter: 807.3 µs | PCE: 34.0 dB (2533 lin) | NCC: 0.786 | Status: VERIFIED_AUTHENTIC_SILICON
+[md-capture] Frame #16 (Scen 1) | EOF->Capture: 60.7 µs | Jitter: 571.4 µs | PCE: 34.0 dB (2538 lin) | NCC: 0.787 | Status: VERIFIED_AUTHENTIC_SILICON
+[md-capture] Frame #17 (Scen 1) | EOF->Capture: 8.8 µs | Jitter: 748.0 µs | PCE: 34.1 dB (2549 lin) | NCC: 0.789 | Status: VERIFIED_AUTHENTIC_SILICON
+[md-capture] Frame #18 (Scen 1) | EOF->Capture: 9.1 µs | Jitter: 618.5 µs | PCE: 34.1 dB (2541 lin) | NCC: 0.788 | Status: VERIFIED_AUTHENTIC_SILICON
+[md-capture] Frame #19 (Scen 1) | EOF->Capture: 8.3 µs | Jitter: 487.8 µs | PCE: 34.0 dB (2540 lin) | NCC: 0.788 | Status: VERIFIED_AUTHENTIC_SILICON
+[md-capture] Frame #20 (Scen 1) | EOF->Capture: 8.2 µs | Jitter: 788.3 µs | PCE: 34.1 dB (2543 lin) | NCC: 0.788 | Status: VERIFIED_AUTHENTIC_SILICON
+[md-capture] Frame #21 (Scen 1) | EOF->Capture: 9.8 µs | Jitter: 583.2 µs | PCE: 34.0 dB (2533 lin) | NCC: 0.786 | Status: VERIFIED_AUTHENTIC_SILICON
+[md-capture] Frame #22 (Scen 1) | EOF->Capture: 50.6 µs | Jitter: 982.5 µs | PCE: 34.1 dB (2554 lin) | NCC: 0.790 | Status: VERIFIED_AUTHENTIC_SILICON
+[md-capture] Frame #23 (Scen 1) | EOF->Capture: 50.2 µs | Jitter: 1616.4 µs | PCE: 34.0 dB (2538 lin) | NCC: 0.787 | Status: VERIFIED_AUTHENTIC_SILICON
+[md-capture] Frame #24 (Scen 1) | EOF->Capture: 7.4 µs | Jitter: 1388.3 µs | PCE: 34.0 dB (2533 lin) | NCC: 0.787 | Status: VERIFIED_AUTHENTIC_SILICON
+[md-capture] Frame #25 (Scen 1) | EOF->Capture: 9.3 µs | Jitter: 723.2 µs | PCE: 34.1 dB (2546 lin) | NCC: 0.788 | Status: VERIFIED_AUTHENTIC_SILICON
+[md-capture] Frame #26 (Scen 1) | EOF->Capture: 8.1 µs | Jitter: 662.6 µs | PCE: 34.0 dB (2535 lin) | NCC: 0.787 | Status: VERIFIED_AUTHENTIC_SILICON
+[md-capture] Frame #27 (Scen 1) | EOF->Capture: 49.7 µs | Jitter: 964.1 µs | PCE: 34.1 dB (2542 lin) | NCC: 0.788 | Status: VERIFIED_AUTHENTIC_SILICON
+[md-capture] Frame #28 (Scen 1) | EOF->Capture: 6.5 µs | Jitter: 251.9 µs | PCE: 34.0 dB (2526 lin) | NCC: 0.785 | Status: VERIFIED_AUTHENTIC_SILICON
+[md-capture] Frame #29 (Scen 1) | EOF->Capture: 51.7 µs | Jitter: 1146.9 µs | PCE: 34.0 dB (2532 lin) | NCC: 0.786 | Status: VERIFIED_AUTHENTIC_SILICON
+[md-capture] Frame #30 (Scen 1) | EOF->Capture: 49.4 µs | Jitter: 1664.4 µs | PCE: 34.1 dB (2546 lin) | NCC: 0.789 | Status: VERIFIED_AUTHENTIC_SILICON
+[md-capture] Frame #31 (Scen 1) | EOF->Capture: 8.3 µs | Jitter: 1246.7 µs | PCE: 34.0 dB (2529 lin) | NCC: 0.786 | Status: VERIFIED_AUTHENTIC_SILICON
+[md-capture] Frame #32 (Scen 1) | EOF->Capture: 8.8 µs | Jitter: 749.8 µs | PCE: 34.0 dB (2540 lin) | NCC: 0.788 | Status: VERIFIED_AUTHENTIC_SILICON
+[md-capture] Frame #1 (Scen 2) | EOF->Capture: 9.9 µs | Jitter: 129556.6 µs | PCE: 0.6 dB (1 lin) | NCC: -0.002 | Status: BLOCK_FOREIGN_SENSOR
+[md-capture] Frame #2 (Scen 2) | EOF->Capture: 10.1 µs | Jitter: 677.1 µs | PCE: 0.8 dB (1 lin) | NCC: 0.006 | Status: BLOCK_FOREIGN_SENSOR
+[md-capture] Frame #3 (Scen 2) | EOF->Capture: 10.2 µs | Jitter: 667.7 µs | PCE: 1.0 dB (1 lin) | NCC: 0.001 | Status: BLOCK_FOREIGN_SENSOR
+[md-capture] Frame #4 (Scen 2) | EOF->Capture: 89.7 µs | Jitter: 932.9 µs | PCE: 1.1 dB (1 lin) | NCC: 0.006 | Status: BLOCK_FOREIGN_SENSOR
+[md-capture] Frame #5 (Scen 2) | EOF->Capture: 59.2 µs | Jitter: 859.4 µs | PCE: 1.3 dB (1 lin) | NCC: 0.001 | Status: BLOCK_FOREIGN_SENSOR
+[md-capture] Frame #6 (Scen 2) | EOF->Capture: 9.1 µs | Jitter: 1250.0 µs | PCE: 1.5 dB (1 lin) | NCC: 0.005 | Status: BLOCK_FOREIGN_SENSOR
+[md-capture] Frame #7 (Scen 2) | EOF->Capture: 9.7 µs | Jitter: 868.1 µs | PCE: 1.6 dB (1 lin) | NCC: 0.006 | Status: BLOCK_FOREIGN_SENSOR
+[md-capture] Frame #8 (Scen 2) | EOF->Capture: 10.1 µs | Jitter: 413.8 µs | PCE: 1.8 dB (1 lin) | NCC: 0.001 | Status: BLOCK_FOREIGN_SENSOR
+[md-capture] Frame #9 (Scen 2) | EOF->Capture: 9.1 µs | Jitter: 653.1 µs | PCE: 1.9 dB (1 lin) | NCC: 0.006 | Status: BLOCK_FOREIGN_SENSOR
+[md-capture] Frame #10 (Scen 2) | EOF->Capture: 11.7 µs | Jitter: 686.3 µs | PCE: 2.0 dB (1 lin) | NCC: -0.003 | Status: BLOCK_FOREIGN_SENSOR
+[md-capture] Frame #1 (Scen 3) | EOF->Capture: 8.6 µs | Jitter: 93309.5 µs | PCE: 0.6 dB (1 lin) | NCC: -0.018 | Status: BLOCK_SYNTHETIC_NO_PRNU
+[md-capture] Frame #2 (Scen 3) | EOF->Capture: 9.1 µs | Jitter: 1030.3 µs | PCE: 0.8 dB (1 lin) | NCC: 0.008 | Status: BLOCK_SYNTHETIC_NO_PRNU
+[md-capture] Frame #3 (Scen 3) | EOF->Capture: 8.8 µs | Jitter: 764.7 µs | PCE: 1.0 dB (1 lin) | NCC: -0.016 | Status: BLOCK_SYNTHETIC_NO_PRNU
+[md-capture] Frame #4 (Scen 3) | EOF->Capture: 10.3 µs | Jitter: 639.8 µs | PCE: 1.1 dB (1 lin) | NCC: 0.009 | Status: BLOCK_SYNTHETIC_NO_PRNU
+[md-capture] Frame #5 (Scen 3) | EOF->Capture: 60.8 µs | Jitter: 894.5 µs | PCE: 1.3 dB (1 lin) | NCC: -0.010 | Status: BLOCK_SYNTHETIC_NO_PRNU
+[md-capture] Frame #6 (Scen 3) | EOF->Capture: 61.4 µs | Jitter: 656.1 µs | PCE: 1.5 dB (1 lin) | NCC: 0.004 | Status: BLOCK_SYNTHETIC_NO_PRNU
+[md-capture] Frame #7 (Scen 3) | EOF->Capture: 61.7 µs | Jitter: 667.2 µs | PCE: 1.6 dB (1 lin) | NCC: 0.009 | Status: BLOCK_SYNTHETIC_NO_PRNU
+[md-capture] Frame #8 (Scen 3) | EOF->Capture: 9.7 µs | Jitter: 474.8 µs | PCE: 1.8 dB (1 lin) | NCC: -0.013 | Status: BLOCK_SYNTHETIC_NO_PRNU
+[md-capture] Frame #9 (Scen 3) | EOF->Capture: 10.3 µs | Jitter: 627.5 µs | PCE: 1.9 dB (1 lin) | NCC: 0.013 | Status: BLOCK_SYNTHETIC_NO_PRNU
+[md-capture] Frame #10 (Scen 3) | EOF->Capture: 50.9 µs | Jitter: 1552.2 µs | PCE: 2.0 dB (1 lin) | NCC: -0.026 | Status: BLOCK_SYNTHETIC_NO_PRNU
+[md-capture] Frame #1 (Scen 1) | EOF->Capture: 52.4 µs | Jitter: 185551.0 µs | PCE: 34.1 dB (2543 lin) | NCC: 0.788 | Status: VERIFIED_AUTHENTIC_SILICON
+[md-capture] Frame #2 (Scen 1) | EOF->Capture: 49.5 µs | Jitter: 1214.1 µs | PCE: 34.0 dB (2529 lin) | NCC: 0.786 | Status: VERIFIED_AUTHENTIC_SILICON
+[md-capture] Frame #100 (Scen 1) | EOF->Capture: 52.7 µs | Jitter: 3196265.9 µs | PCE: 33.8 dB (2414 lin) | NCC: 0.768 | Status: VERIFIED_AUTHENTIC_SILICON
+[md-capture] Frame #101 (Scen 1) | EOF->Capture: 48.4 µs | Jitter: 1356.4 µs | PCE: 33.7 dB (2364 lin) | NCC: 0.760 | Status: VERIFIED_AUTHENTIC_SILICON
+[md-capture] Frame #102 (Scen 1) | EOF->Capture: 50.5 µs | Jitter: 1267.6 µs | PCE: 34.2 dB (2612 lin) | NCC: 0.799 | Status: VERIFIED_AUTHENTIC_SILICON
+[md-capture] Frame #103 (Scen 1) | EOF->Capture: 60.2 µs | Jitter: 597.8 µs | PCE: 33.7 dB (2365 lin) | NCC: 0.760 | Status: VERIFIED_AUTHENTIC_SILICON
+[md-capture] Frame #104 (Scen 1) | EOF->Capture: 7.8 µs | Jitter: 481.4 µs | PCE: 33.7 dB (2357 lin) | NCC: 0.759 | Status: VERIFIED_AUTHENTIC_SILICON
+[md-capture] Frame #105 (Scen 1) | EOF->Capture: 50.1 µs | Jitter: 737.6 µs | PCE: 33.7 dB (2363 lin) | NCC: 0.760 | Status: VERIFIED_AUTHENTIC_SILICON
+[md-capture] Frame #106 (Scen 1) | EOF->Capture: 8.0 µs | Jitter: 564.7 µs | PCE: 33.7 dB (2345 lin) | NCC: 0.757 | Status: VERIFIED_AUTHENTIC_SILICON
+[md-capture] Frame #107 (Scen 1) | EOF->Capture: 9.4 µs | Jitter: 779.5 µs | PCE: 33.9 dB (2458 lin) | NCC: 0.775 | Status: VERIFIED_AUTHENTIC_SILICON
+[md-capture] Frame #108 (Scen 1) | EOF->Capture: 18.5 µs | Jitter: 2852.9 µs | PCE: 33.9 dB (2477 lin) | NCC: 0.778 | Status: VERIFIED_AUTHENTIC_SILICON
+[md-capture] Frame #109 (Scen 1) | EOF->Capture: 8.5 µs | Jitter: 448.8 µs | PCE: 33.8 dB (2377 lin) | NCC: 0.762 | Status: VERIFIED_AUTHENTIC_SILICON
+[md-capture] Frame #110 (Scen 1) | EOF->Capture: 7.8 µs | Jitter: 583.1 µs | PCE: 34.2 dB (2614 lin) | NCC: 0.799 | Status: VERIFIED_AUTHENTIC_SILICON
+[md-capture] Frame #111 (Scen 1) | EOF->Capture: 8.8 µs | Jitter: 689.5 µs | PCE: 34.2 dB (2609 lin) | NCC: 0.798 | Status: VERIFIED_AUTHENTIC_SILICON
+[md-capture] Frame #112 (Scen 1) | EOF->Capture: 49.5 µs | Jitter: 1178.4 µs | PCE: 33.8 dB (2398 lin) | NCC: 0.765 | Status: VERIFIED_AUTHENTIC_SILICON
+[md-capture] Frame #113 (Scen 1) | EOF->Capture: 7.6 µs | Jitter: 1132.9 µs | PCE: 33.8 dB (2391 lin) | NCC: 0.764 | Status: VERIFIED_AUTHENTIC_SILICON
+[md-capture] Frame #114 (Scen 1) | EOF->Capture: 8.4 µs | Jitter: 844.0 µs | PCE: 33.9 dB (2465 lin) | NCC: 0.776 | Status: VERIFIED_AUTHENTIC_SILICON
+[md-capture] Frame #115 (Scen 1) | EOF->Capture: 9.4 µs | Jitter: 638.5 µs | PCE: 34.1 dB (2584 lin) | NCC: 0.794 | Status: VERIFIED_AUTHENTIC_SILICON
+[md-capture] Frame #116 (Scen 1) | EOF->Capture: 29.3 µs | Jitter: 3027.9 µs | PCE: 33.9 dB (2479 lin) | NCC: 0.778 | Status: VERIFIED_AUTHENTIC_SILICON
+[md-capture] Frame #117 (Scen 1) | EOF->Capture: 16.9 µs | Jitter: 1255.6 µs | PCE: 34.2 dB (2618 lin) | NCC: 0.800 | Status: VERIFIED_AUTHENTIC_SILICON
+[md-capture] Frame #118 (Scen 1) | EOF->Capture: 48.9 µs | Jitter: 1004.7 µs | PCE: 33.7 dB (2340 lin) | NCC: 0.756 | Status: VERIFIED_AUTHENTIC_SILICON
+[md-capture] Frame #119 (Scen 1) | EOF->Capture: 56.1 µs | Jitter: 1399.1 µs | PCE: 34.2 dB (2600 lin) | NCC: 0.797 | Status: VERIFIED_AUTHENTIC_SILICON
+[md-capture] Frame #120 (Scen 1) | EOF->Capture: 10.9 µs | Jitter: 611.9 µs | PCE: 33.7 dB (2348 lin) | NCC: 0.757 | Status: VERIFIED_AUTHENTIC_SILICON
+[md-capture] Frame #121 (Scen 1) | EOF->Capture: 19.6 µs | Jitter: 610.1 µs | PCE: 34.2 dB (2618 lin) | NCC: 0.800 | Status: VERIFIED_AUTHENTIC_SILICON
+[md-capture] Frame #122 (Scen 4) | EOF->Capture: 64.1 µs | Jitter: 93685.5 µs | PCE: 34.1 dB (2543 lin) | NCC: 0.788 | Status: BLOCK_TIMING_OUT_OF_BOUNDS
+[md-capture] Frame #123 (Scen 4) | EOF->Capture: 129.9 µs | Jitter: 8493.1 µs | PCE: 34.0 dB (2529 lin) | NCC: 0.786 | Status: BLOCK_CHALLENGE_MODULATION
+[md-capture] Frame #124 (Scen 4) | EOF->Capture: 96.2 µs | Jitter: 4702.5 µs | PCE: 34.0 dB (2534 lin) | NCC: 0.787 | Status: BLOCK_CHALLENGE_MODULATION
+[md-capture] Frame #125 (Scen 4) | EOF->Capture: 65.1 µs | Jitter: 4744.7 µs | PCE: 34.1 dB (2550 lin) | NCC: 0.789 | Status: BLOCK_CHALLENGE_MODULATION
+[md-capture] Frame #126 (Scen 4) | EOF->Capture: 24.9 µs | Jitter: 4690.8 µs | PCE: 34.0 dB (2538 lin) | NCC: 0.787 | Status: BLOCK_CHALLENGE_MODULATION
+[md-capture] Frame #127 (Scen 1) | EOF->Capture: 9.6 µs | Jitter: 178950.7 µs | PCE: 34.1 dB (2587 lin) | NCC: 0.795 | Status: BLOCK_TIMING_OUT_OF_BOUNDS
+[md-capture] Frame #127 (Scen 1) | EOF->Capture: 9.8 µs | Jitter: 387.3 µs | PCE: 34.1 dB (2587 lin) | NCC: 0.795 | Status: BLOCK_SEQ_REPLAY
+[md-capture] Frame #129 (Scen 1) | EOF->Capture: 9.3 µs | Jitter: 692.8 µs | PCE: 34.1 dB (2587 lin) | NCC: 0.795 | Status: BLOCK_SEQ_GAP
+[md-capture] Frame #127 (Scen 1) | EOF->Capture: 10.0 µs | Jitter: 663.8 µs | PCE: 34.1 dB (2587 lin) | NCC: 0.795 | Status: BLOCK_SEQ_REPLAY
+[md-capture] Frame #131 (Scen 1) | EOF->Capture: 9.8 µs | Jitter: 629.9 µs | PCE: 34.1 dB (2587 lin) | NCC: 0.795 | Status: BLOCK_SEQ_GAP
+[md-capture] Frame #127 (Scen 1) | EOF->Capture: 10.5 µs | Jitter: 676.9 µs | PCE: 34.1 dB (2587 lin) | NCC: 0.795 | Status: BLOCK_SEQ_REPLAY
+[md-capture] Frame #135 (Scen 1) | EOF->Capture: 118.8 µs | Jitter: 195618.4 µs | PCE: 33.9 dB (2466 lin) | NCC: 0.776 | Status: BLOCK_SEQ_GAP
+[md-capture] Frame #138 (Scen 1) | EOF->Capture: 54.9 µs | Jitter: 1038.8 µs | PCE: 33.8 dB (2419 lin) | NCC: 0.769 | Status: BLOCK_SEQ_GAP
+[md-capture] Frame #139 (Scen 1) | EOF->Capture: 19.8 µs | Jitter: 96321.4 µs | PCE: 33.9 dB (2436 lin) | NCC: 0.771 | Status: BLOCK_TIMING_OUT_OF_BOUNDS
+[md-capture] Frame #142 (Scen 1) | EOF->Capture: 10.1 µs | Jitter: 768.5 µs | PCE: 34.2 dB (2606 lin) | NCC: 0.798 | Status: BLOCK_SEQ_GAP

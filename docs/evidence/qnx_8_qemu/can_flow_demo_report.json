@@ -1,0 +1,402 @@
+{
+  "status": "SIMULATED",
+  "disclaimer": "Synthetic optical flow vs synthetic CAN speed log only. Real camera ego-motion / CAN timing alignment is NOT YET MEASURED.",
+  "matched_authentic": {
+    "status_label": "SIMULATED (host-only synthetic optical flow vs synthetic CAN log)",
+    "verdict": "VERIFIED_FLOW_CAN_MATCH",
+    "allow": true,
+    "num_frames": 24,
+    "num_pairs": 23,
+    "scale_px_per_frame_per_mps": 0.05,
+    "mean_flow_px_per_frame": 0.7503060676745603,
+    "mean_expected_flow_px_per_frame": 0.75,
+    "nrmse": 0.003424459613676482,
+    "pearson_r": 0.9999676676651155,
+    "reason": "Optical flow magnitude consistent with CAN speed log",
+    "pair_details": [
+      {
+        "pair_index": 0.0,
+        "can_speed_mps": 4.478260869565217,
+        "expected_flow_px": 0.22391304347826085,
+        "measured_flow_px": 0.22771076294670087,
+        "dx_px": 0.2277094919435813,
+        "dy_px": -0.000760815723207831
+      },
+      {
+        "pair_index": 1.0,
+        "can_speed_mps": 5.434782608695652,
+        "expected_flow_px": 0.27173913043478265,
+        "measured_flow_px": 0.27503516251676197,
+        "dx_px": 0.27503514156380243,
+        "dy_px": 0.00010735735097260423
+      },
+      {
+        "pair_index": 2.0,
+        "can_speed_mps": 6.391304347826087,
+        "expected_flow_px": 0.3195652173913044,
+        "measured_flow_px": 0.32213229713025004,
+        "dx_px": 0.3221315213541382,
+        "dy_px": -0.0007069685142156968
+      },
+      {
+        "pair_index": 3.0,
+        "can_speed_mps": 7.3478260869565215,
+        "expected_flow_px": 0.3673913043478261,
+        "measured_flow_px": 0.3695312685068823,
+        "dx_px": 0.36952955894394574,
+        "dy_px": -0.0011240422583133445
+      },
+      {
+        "pair_index": 4.0,
+        "can_speed_mps": 8.304347826086957,
+        "expected_flow_px": 0.41521739130434787,
+        "measured_flow_px": 0.4175887957531077,
+        "dx_px": 0.4175887482117063,
+        "dy_px": -0.00019926241715258756
+      },
+      {
+        "pair_index": 5.0,
+        "can_speed_mps": 9.26086956521739,
+        "expected_flow_px": 0.46304347826086956,
+        "measured_flow_px": 0.46322425663653144,
+        "dx_px": 0.4632239406590323,
+        "dy_px": 0.0005410515543783927
+      },
+      {
+        "pair_index": 6.0,
+        "can_speed_mps": 10.217391304347826,
+        "expected_flow_px": 0.5108695652173914,
+        "measured_flow_px": 0.5099912824042778,
+        "dx_px": 0.5099911586941097,
+        "dy_px": 0.0003552213384764502
+      },
+      {
+        "pair_index": 7.0,
+        "can_speed_mps": 11.173913043478262,
+        "expected_flow_px": 0.5586956521739131,
+        "measured_flow_px": 0.5584160369493917,
+        "dx_px": 0.5584158921052442,
+        "dy_px": -0.00040220214895026835
+      },
+      {
+        "pair_index": 8.0,
+        "can_speed_mps": 12.130434782608695,
+        "expected_flow_px": 0.6065217391304348,
+        "measured_flow_px": 0.6035779933369639,
+        "dx_px": 0.6035733576758036,
+        "dy_px": 0.0023655749052894524
+      },
+      {
+        "pair_index": 9.0,
+        "can_speed_mps": 13.08695652173913,
+        "expected_flow_px": 0.6543478260869566,
+        "measured_flow_px": 0.65343464454145,
+        "dx_px": 0.6534345927104059,
+        "dy_px": -0.0002602621695281013
+      },
+      {
+        "pair_index": 10.0,
+        "can_speed_mps": 14.043478260869566,
+        "expected_flow_px": 0.7021739130434783,
+        "measured_flow_px": 0.6981770539630642,
+        "dx_px": 0.69817659002519,
+        "dy_px": 0.0008048734939651252
+      },
+      {
+        "pair_index": 11.0,
+        "can_speed_mps": 15.0,
+        "expected_flow_px": 0.75,
+        "measured_flow_px": 0.7474677912654946,
+        "dx_px": 0.7474647717038417,
+        "dy_px": 0.0021246272709961552
+      },
+      {
+        "pair_index": 12.0,
+        "can_speed_mps": 15.956521739130435,
+        "expected_flow_px": 0.7978260869565218,
+        "measured_flow_px": 0.794484462439226,
+        "dx_px": 0.7944842279609028,
+        "dy_px": -0.0006103922624556503
+      },
+      {
+        "pair_index": 13.0,
+        "can_speed_mps": 16.913043478260867,
+        "expected_flow_px": 0.8456521739130434,
+        "measured_flow_px": 0.8425710517833853,
+        "dx_px": 0.8425695902065259,
+        "dy_px": 0.001569382861878531
+      },
+      {
+        "pair_index": 14.0,
+        "can_speed_mps": 17.869565217391305,
+        "expected_flow_px": 0.8934782608695653,
+        "measured_flow_px": 0.8907352031939241,
+        "dx_px": 0.8907350182772212,
+        "dy_px": 0.0005739543531238725
+      },
+      {
+        "pair_index": 15.0,
+        "can_speed_mps": 18.826086956521742,
+        "expected_flow_px": 0.9413043478260872,
+        "measured_flow_px": 0.940134166935755,
+        "dx_px": 0.9401341441027001,
+        "dy_px": 0.00020720103669862456
+      },
+      {
+        "pair_index": 16.0,
+        "can_speed_mps": 19.782608695652172,
+        "expected_flow_px": 0.9891304347826086,
+        "measured_flow_px": 0.9877937834007916,
+        "dx_px": 0.9877934139165963,
+        "dy_px": -0.0008543700872092828
+      },
+      {
+        "pair_index": 17.0,
+        "can_speed_mps": 20.73913043478261,
+        "expected_flow_px": 1.0369565217391306,
+        "measured_flow_px": 1.0383683524938427,
+        "dx_px": 1.0383683277310551,
+        "dy_px": 0.00022677254931553718
+      },
+      {
+        "pair_index": 18.0,
+        "can_speed_mps": 21.695652173913047,
+        "expected_flow_px": 1.0847826086956525,
+        "measured_flow_px": 1.0870277994031123,
+        "dx_px": 1.0870266871300032,
+        "dy_px": -0.0015550377304232358
+      },
+      {
+        "pair_index": 19.0,
+        "can_speed_mps": 22.652173913043477,
+        "expected_flow_px": 1.132608695652174,
+        "measured_flow_px": 1.1362501575004404,
+        "dx_px": 1.1362500763965382,
+        "dy_px": 0.0004293118179984019
+      },
+      {
+        "pair_index": 20.0,
+        "can_speed_mps": 23.608695652173914,
+        "expected_flow_px": 1.1804347826086958,
+        "measured_flow_px": 1.1828332845482037,
+        "dx_px": 1.1828327937152885,
+        "dy_px": -0.0010775652080523878
+      },
+      {
+        "pair_index": 21.0,
+        "can_speed_mps": 24.56521739130435,
+        "expected_flow_px": 1.2282608695652177,
+        "measured_flow_px": 1.2309470993366667,
+        "dx_px": 1.2309467444926967,
+        "dy_px": -0.0009346593953840314
+      },
+      {
+        "pair_index": 22.0,
+        "can_speed_mps": 25.52173913043478,
+        "expected_flow_px": 1.2760869565217392,
+        "measured_flow_px": 1.2796068495286645,
+        "dx_px": 1.2796028254225082,
+        "dy_px": -0.00320913250090526
+      }
+    ]
+  },
+  "replay_mismatched_can": {
+    "status_label": "SIMULATED (host-only synthetic optical flow vs synthetic CAN log)",
+    "verdict": "FLAG_REPLAY_CAN_SPEED_MISMATCH",
+    "allow": false,
+    "num_frames": 24,
+    "num_pairs": 23,
+    "scale_px_per_frame_per_mps": 0.05,
+    "mean_flow_px_per_frame": 0.7503060676745603,
+    "mean_expected_flow_px_per_frame": 0.6000000000000002,
+    "nrmse": 0.9064819671479895,
+    "pearson_r": -0.9999676676651158,
+    "reason": "nrmse=0.906 > max_nrmse=0.250; pearson_r=-1.000 < min_corr=0.750",
+    "pair_details": [
+      {
+        "pair_index": 0.0,
+        "can_speed_mps": 23.47826086956522,
+        "expected_flow_px": 1.173913043478261,
+        "measured_flow_px": 0.22771076294670087,
+        "dx_px": 0.2277094919435813,
+        "dy_px": -0.000760815723207831
+      },
+      {
+        "pair_index": 1.0,
+        "can_speed_mps": 22.434782608695652,
+        "expected_flow_px": 1.1217391304347826,
+        "measured_flow_px": 0.27503516251676197,
+        "dx_px": 0.27503514156380243,
+        "dy_px": 0.00010735735097260423
+      },
+      {
+        "pair_index": 2.0,
+        "can_speed_mps": 21.391304347826086,
+        "expected_flow_px": 1.0695652173913044,
+        "measured_flow_px": 0.32213229713025004,
+        "dx_px": 0.3221315213541382,
+        "dy_px": -0.0007069685142156968
+      },
+      {
+        "pair_index": 3.0,
+        "can_speed_mps": 20.347826086956523,
+        "expected_flow_px": 1.0173913043478262,
+        "measured_flow_px": 0.3695312685068823,
+        "dx_px": 0.36952955894394574,
+        "dy_px": -0.0011240422583133445
+      },
+      {
+        "pair_index": 4.0,
+        "can_speed_mps": 19.304347826086953,
+        "expected_flow_px": 0.9652173913043477,
+        "measured_flow_px": 0.4175887957531077,
+        "dx_px": 0.4175887482117063,
+        "dy_px": -0.00019926241715258756
+      },
+      {
+        "pair_index": 5.0,
+        "can_speed_mps": 18.26086956521739,
+        "expected_flow_px": 0.9130434782608696,
+        "measured_flow_px": 0.46322425663653144,
+        "dx_px": 0.4632239406590323,
+        "dy_px": 0.0005410515543783927
+      },
+      {
+        "pair_index": 6.0,
+        "can_speed_mps": 17.217391304347828,
+        "expected_flow_px": 0.8608695652173914,
+        "measured_flow_px": 0.5099912824042778,
+        "dx_px": 0.5099911586941097,
+        "dy_px": 0.0003552213384764502
+      },
+      {
+        "pair_index": 7.0,
+        "can_speed_mps": 16.17391304347826,
+        "expected_flow_px": 0.8086956521739131,
+        "measured_flow_px": 0.5584160369493917,
+        "dx_px": 0.5584158921052442,
+        "dy_px": -0.00040220214895026835
+      },
+      {
+        "pair_index": 8.0,
+        "can_speed_mps": 15.130434782608695,
+        "expected_flow_px": 0.7565217391304349,
+        "measured_flow_px": 0.6035779933369639,
+        "dx_px": 0.6035733576758036,
+        "dy_px": 0.0023655749052894524
+      },
+      {
+        "pair_index": 9.0,
+        "can_speed_mps": 14.08695652173913,
+        "expected_flow_px": 0.7043478260869566,
+        "measured_flow_px": 0.65343464454145,
+        "dx_px": 0.6534345927104059,
+        "dy_px": -0.0002602621695281013
+      },
+      {
+        "pair_index": 10.0,
+        "can_speed_mps": 13.043478260869566,
+        "expected_flow_px": 0.6521739130434784,
+        "measured_flow_px": 0.6981770539630642,
+        "dx_px": 0.69817659002519,
+        "dy_px": 0.0008048734939651252
+      },
+      {
+        "pair_index": 11.0,
+        "can_speed_mps": 12.0,
+        "expected_flow_px": 0.6000000000000001,
+        "measured_flow_px": 0.7474677912654946,
+        "dx_px": 0.7474647717038417,
+        "dy_px": 0.0021246272709961552
+      },
+      {
+        "pair_index": 12.0,
+        "can_speed_mps": 10.956521739130435,
+        "expected_flow_px": 0.5478260869565218,
+        "measured_flow_px": 0.794484462439226,
+        "dx_px": 0.7944842279609028,
+        "dy_px": -0.0006103922624556503
+      },
+      {
+        "pair_index": 13.0,
+        "can_speed_mps": 9.913043478260871,
+        "expected_flow_px": 0.49565217391304356,
+        "measured_flow_px": 0.8425710517833853,
+        "dx_px": 0.8425695902065259,
+        "dy_px": 0.001569382861878531
+      },
+      {
+        "pair_index": 14.0,
+        "can_speed_mps": 8.869565217391305,
+        "expected_flow_px": 0.44347826086956527,
+        "measured_flow_px": 0.8907352031939241,
+        "dx_px": 0.8907350182772212,
+        "dy_px": 0.0005739543531238725
+      },
+      {
+        "pair_index": 15.0,
+        "can_speed_mps": 7.826086956521739,
+        "expected_flow_px": 0.391304347826087,
+        "measured_flow_px": 0.940134166935755,
+        "dx_px": 0.9401341441027001,
+        "dy_px": 0.00020720103669862456
+      },
+      {
+        "pair_index": 16.0,
+        "can_speed_mps": 6.782608695652174,
+        "expected_flow_px": 0.33913043478260874,
+        "measured_flow_px": 0.9877937834007916,
+        "dx_px": 0.9877934139165963,
+        "dy_px": -0.0008543700872092828
+      },
+      {
+        "pair_index": 17.0,
+        "can_speed_mps": 5.739130434782609,
+        "expected_flow_px": 0.2869565217391305,
+        "measured_flow_px": 1.0383683524938427,
+        "dx_px": 1.0383683277310551,
+        "dy_px": 0.00022677254931553718
+      },
+      {
+        "pair_index": 18.0,
+        "can_speed_mps": 4.695652173913045,
+        "expected_flow_px": 0.23478260869565226,
+        "measured_flow_px": 1.0870277994031123,
+        "dx_px": 1.0870266871300032,
+        "dy_px": -0.0015550377304232358
+      },
+      {
+        "pair_index": 19.0,
+        "can_speed_mps": 3.6521739130434785,
+        "expected_flow_px": 0.18260869565217394,
+        "measured_flow_px": 1.1362501575004404,
+        "dx_px": 1.1362500763965382,
+        "dy_px": 0.0004293118179984019
+      },
+      {
+        "pair_index": 20.0,
+        "can_speed_mps": 2.608695652173914,
+        "expected_flow_px": 0.1304347826086957,
+        "measured_flow_px": 1.1828332845482037,
+        "dx_px": 1.1828327937152885,
+        "dy_px": -0.0010775652080523878
+      },
+      {
+        "pair_index": 21.0,
+        "can_speed_mps": 1.5652173913043494,
+        "expected_flow_px": 0.07826086956521748,
+        "measured_flow_px": 1.2309470993366667,
+        "dx_px": 1.2309467444926967,
+        "dy_px": -0.0009346593953840314
+      },
+      {
+        "pair_index": 22.0,
+        "can_speed_mps": 0.5217391304347831,
+        "expected_flow_px": 0.02608695652173916,
+        "measured_flow_px": 1.2796068495286645,
+        "dx_px": 1.2796028254225082,
+        "dy_px": -0.00320913250090526
+      }
+    ]
+  }
+}

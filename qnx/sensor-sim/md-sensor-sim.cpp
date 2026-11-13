@@ -1,6 +1,10 @@
 // md-sensor-sim.cpp
+#ifndef _QNX_SOURCE
 #define _QNX_SOURCE
+#endif
+#ifndef _POSIX_C_SOURCE
 #define _POSIX_C_SOURCE 200809L
+#endif
 
 #include <iostream>
 #include <vector>
@@ -152,6 +156,11 @@ int main(int argc, char* argv[]) {
     uint32_t active_scenario = opts.positional_scenario;
     if (opts.force_replay) active_scenario = SCENARIO_7_REPLAY_FRAME;
     int num_frames = opts.positional_frames;
+    if (argc >= 2) {
+        // Explicit CLI invocation should not inherit a stale /tmp/mdfp_active_scenario file
+        // left behind by an earlier standalone run. Runtime writes via /dev/mdconfirm still apply.
+        std::remove("/tmp/mdfp_active_scenario");
+    }
 
     std::cout << "[md-sensor-sim] Streaming frames at ~" << MDFP_NOMINAL_FPS << " FPS..." << std::endl;
     std::cout << "[md-sensor-sim] Extra Signals (SIMULATED, off by default): "
@@ -170,7 +179,7 @@ int main(int argc, char* argv[]) {
     uint32_t next_seq = opts.seq_start;
 
     for (int iter = 0; iter < num_frames; ++iter) {
-        // Poll for dynamic scenario switch request
+        // Poll for dynamic scenario switch request (consume one-shot write from md-ctl)
         FILE* fsc = fopen("/tmp/mdfp_active_scenario", "r");
         if (fsc) {
             int sc = 1;
@@ -178,15 +187,15 @@ int main(int argc, char* argv[]) {
                 if (sc >= 1 && sc <= 8) active_scenario = static_cast<uint32_t>(sc);
             }
             fclose(fsc);
+            std::remove("/tmp/mdfp_active_scenario");
         }
 
         // Scenario 5: Physical Cable Cut / Hardware Sabotage
         if (active_scenario == SCENARIO_5_CABLE_SABOTAGE) {
             std::cout << "\n[!] SCENARIO 5 TRIGGERED: Simulating Physical Cable Cut! Pausing 120 ms...\n";
             usleep(120000); // Exceeds 50 ms watchdog deadline
-            // Reset scenario back to 1
-            FILE* fr = fopen("/tmp/mdfp_active_scenario", "w");
-            if (fr) { fprintf(fr, "1\n"); fclose(fr); }
+            // Reset scenario back to 1 without leaving a stale override file on disk
+            std::remove("/tmp/mdfp_active_scenario");
             active_scenario = SCENARIO_1_NATIVE_SENSOR;
             continue;
         }
@@ -267,7 +276,6 @@ int main(int argc, char* argv[]) {
                     pix_val = effective_illumination + shot_noise * 0.2;
                 } else if (effective_scenario == SCENARIO_4_SYNTHETIC_WITH_PRNU) {
                     pix_val = effective_illumination * (1.0 + g_k_ref[i]) + shot_noise;
-                    usleep(3000);
                 } else {
                     pix_val = effective_illumination * (1.0 + g_k_ref[i]) + shot_noise;
                 }
@@ -275,6 +283,9 @@ int main(int argc, char* argv[]) {
                 if (pix_val < 0.0) pix_val = 0.0;
                 if (pix_val > 65535.0) pix_val = 65535.0;
                 shm->bayer_raw[i] = (uint16_t)pix_val;
+            }
+            if (effective_scenario == SCENARIO_4_SYNTHETIC_WITH_PRNU) {
+                usleep(3000);  // Simulate ~3 ms per-frame synthesis latency (not per pixel)
             }
 
             if (effective_scenario == SCENARIO_1_NATIVE_SENSOR && !opts.force_bad_modulation) {

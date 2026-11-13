@@ -1,0 +1,327 @@
+MD-Confirm RTOS — QNX 8.0 QEMU & Host Verification Evidence Summary
+Solana Mainnet TX : 54DXk4XAxhuQNDrbTqRXZmPFvEDMFVwxa6FLz1vMT6fjzUzepLivCGgGKAJgjgYQKv96TegrCNoCnyowxbEyiXbT
+Solscan URL       : https://solscan.io/tx/54DXk4XAxhuQNDrbTqRXZmPFvEDMFVwxa6FLz1vMT6fjzUzepLivCGgGKAJgjgYQKv96TegrCNoCnyowxbEyiXbT
+Solana Slot       : 469030044
+Solana Memo       : MDFP1|qnx-8.0-adas-node-01|6b4fbea194dce831926d65351522a78081a1420888d5d7f64295110f137405ab|65
+==============================================================================
+
+### 1. md_verify_cli (no checkpoint -> PASS + tail truncation warning) [rc=0]
+========================================================================
+ MD-CONFIRM RTOS: INDEPENDENT FORENSIC VERIFIER CLI                     
+ Standards: RFC 6962 + RFC 8032 + RFC 8785 + External Checkpoints       
+========================================================================
+[*] Journal Source        : /mnt/qnx-md-rtos/test-vm/captured/tamper_evident_journal.log
+[*] Pinned Device PubKey  : 7ea81ac6c1fc3a9a...63f291160696a468
+[+] Loaded 65 sealed forensic records.
+
+--- AUDIT TRAIL (Showing most recent 8 of 65 sealed entries) ---
+ Seq: 119   | Type: AUTHENTIC   | Root: c32960353eb4... | Sig: 0530461d88b6... | Status: VERIFIED_AUTHENTIC_SILICON
+ Seq: 120   | Type: AUTHENTIC   | Root: 656249770242... | Sig: f2c0da96d496... | Status: VERIFIED_AUTHENTIC_SILICON
+ Seq: 121   | Type: AUTHENTIC   | Root: 5b372db04460... | Sig: 28c29b675cbd... | Status: VERIFIED_AUTHENTIC_SILICON
+ Seq: 122   | Type: GHOST_EVENT | Root: 546b5e9f0133... | Sig: e78ecaa95a42... | Status: GHOST_EVENT_WATCHDOG_TRIPPED
+ Seq: 127   | Type: GHOST_EVENT | Root: 767787122412... | Sig: f3d64a365799... | Status: GHOST_EVENT_WATCHDOG_TRIPPED
+ Seq: 128   | Type: GHOST_EVENT | Root: cfdda36ff2cc... | Sig: 4df5d77b576a... | Status: GHOST_EVENT_WATCHDOG_TRIPPED
+ Seq: 139   | Type: GHOST_EVENT | Root: c8c6f8a54148... | Sig: 7fb2093484ab... | Status: GHOST_EVENT_WATCHDOG_TRIPPED
+ Seq: 143   | Type: GHOST_EVENT | Root: 6b4fbea194dc... | Sig: 99cb159bc2d1... | Status: GHOST_EVENT_WATCHDOG_TRIPPED
+
+------------------------------------------------------------------------
+ Total Sealed Records Audited : 65
+ Recalculated Merkle Root     : 6b4fbea194dce831926d65351522a78081a1420888d5d7f64295110f137405ab
+ Last Recorded Merkle Root    : 6b4fbea194dce831926d65351522a78081a1420888d5d7f64295110f137405ab
+ STH Chain Entries Verified   : 10
+ Trust Basis                  : truncation/rollback detection is relative to checkpoint none (source: none)
+ WARNING: tail truncation NOT detectable.
+========================================================================
+ AUDIT VERDICT                : root and signature verified [PASS]
+========================================================================
+
+### 2. md_verify_cli (--checkpoint tree_size=32 -> PASS, source: file) [rc=0]
+========================================================================
+ MD-CONFIRM RTOS: INDEPENDENT FORENSIC VERIFIER CLI                     
+ Standards: RFC 6962 + RFC 8032 + RFC 8785 + External Checkpoints       
+========================================================================
+[*] Journal Source        : /mnt/qnx-md-rtos/test-vm/captured/tamper_evident_journal.log
+[*] Pinned Device PubKey  : 7ea81ac6c1fc3a9a...63f291160696a468
+[+] Loaded 65 sealed forensic records.
+
+--- AUDIT TRAIL (Showing most recent 8 of 65 sealed entries) ---
+ Seq: 119   | Type: AUTHENTIC   | Root: c32960353eb4... | Sig: 0530461d88b6... | Status: VERIFIED_AUTHENTIC_SILICON
+ Seq: 120   | Type: AUTHENTIC   | Root: 656249770242... | Sig: f2c0da96d496... | Status: VERIFIED_AUTHENTIC_SILICON
+ Seq: 121   | Type: AUTHENTIC   | Root: 5b372db04460... | Sig: 28c29b675cbd... | Status: VERIFIED_AUTHENTIC_SILICON
+ Seq: 122   | Type: GHOST_EVENT | Root: 546b5e9f0133... | Sig: e78ecaa95a42... | Status: GHOST_EVENT_WATCHDOG_TRIPPED
+ Seq: 127   | Type: GHOST_EVENT | Root: 767787122412... | Sig: f3d64a365799... | Status: GHOST_EVENT_WATCHDOG_TRIPPED
+ Seq: 128   | Type: GHOST_EVENT | Root: cfdda36ff2cc... | Sig: 4df5d77b576a... | Status: GHOST_EVENT_WATCHDOG_TRIPPED
+ Seq: 139   | Type: GHOST_EVENT | Root: c8c6f8a54148... | Sig: 7fb2093484ab... | Status: GHOST_EVENT_WATCHDOG_TRIPPED
+ Seq: 143   | Type: GHOST_EVENT | Root: 6b4fbea194dc... | Sig: 99cb159bc2d1... | Status: GHOST_EVENT_WATCHDOG_TRIPPED
+
+------------------------------------------------------------------------
+ Total Sealed Records Audited : 65
+ Recalculated Merkle Root     : 6b4fbea194dce831926d65351522a78081a1420888d5d7f64295110f137405ab
+ Last Recorded Merkle Root    : 6b4fbea194dce831926d65351522a78081a1420888d5d7f64295110f137405ab
+ STH Chain Entries Verified   : 10
+ Trust Basis                  : truncation/rollback detection is relative to checkpoint tree_size=32 root=202fe2cb152692b2... [/mnt/qnx-md-rtos/tmp/host_demo/ckpt_32.json] (source: file)
+========================================================================
+ AUDIT VERDICT                : root, signature, and checkpoint/anchor verified [PASS]
+========================================================================
+
+### 3. md_verify_cli (negative tail truncation 64/65 -> FAIL:TAIL_TRUNCATION) [rc=2]
+========================================================================
+ MD-CONFIRM RTOS: INDEPENDENT FORENSIC VERIFIER CLI                     
+ Standards: RFC 6962 + RFC 8032 + RFC 8785 + External Checkpoints       
+========================================================================
+[*] Journal Source        : /mnt/qnx-md-rtos/tmp/host_demo/truncated_64.log
+[*] Pinned Device PubKey  : 7ea81ac6c1fc3a9a...63f291160696a468
+[+] Loaded 64 sealed forensic records.
+
+--- AUDIT TRAIL (Showing most recent 8 of 64 sealed entries) ---
+ Seq: 118   | Type: AUTHENTIC   | Root: 49e874fd157b... | Sig: 4d3d8c416858... | Status: VERIFIED_AUTHENTIC_SILICON
+ Seq: 119   | Type: AUTHENTIC   | Root: c32960353eb4... | Sig: 0530461d88b6... | Status: VERIFIED_AUTHENTIC_SILICON
+ Seq: 120   | Type: AUTHENTIC   | Root: 656249770242... | Sig: f2c0da96d496... | Status: VERIFIED_AUTHENTIC_SILICON
+ Seq: 121   | Type: AUTHENTIC   | Root: 5b372db04460... | Sig: 28c29b675cbd... | Status: VERIFIED_AUTHENTIC_SILICON
+ Seq: 122   | Type: GHOST_EVENT | Root: 546b5e9f0133... | Sig: e78ecaa95a42... | Status: GHOST_EVENT_WATCHDOG_TRIPPED
+ Seq: 127   | Type: GHOST_EVENT | Root: 767787122412... | Sig: f3d64a365799... | Status: GHOST_EVENT_WATCHDOG_TRIPPED
+ Seq: 128   | Type: GHOST_EVENT | Root: cfdda36ff2cc... | Sig: 4df5d77b576a... | Status: GHOST_EVENT_WATCHDOG_TRIPPED
+ Seq: 139   | Type: GHOST_EVENT | Root: c8c6f8a54148... | Sig: 7fb2093484ab... | Status: GHOST_EVENT_WATCHDOG_TRIPPED
+
+------------------------------------------------------------------------
+ Total Sealed Records Audited : 64
+ Recalculated Merkle Root     : c8c6f8a541485b11f4b5fff635a5e47e186a44c252dd5594746b1a6dc975351c
+ Last Recorded Merkle Root    : c8c6f8a541485b11f4b5fff635a5e47e186a44c252dd5594746b1a6dc975351c
+ Trust Basis                  : truncation/rollback detection is relative to checkpoint tree_size=65 root=6b4fbea194dce831... [/mnt/qnx-md-rtos/tmp/host_demo/ckpt_65.json] (source: file)
+
+--- DETECTED INTEGRITY FAILURES ---
+ [FAIL] FAIL:TAIL_TRUNCATION (journal tree_size=64 < checkpoint tree_size=65; rollback/truncation detected)
+========================================================================
+ AUDIT VERDICT                : VERIFICATION FAILED
+========================================================================
+
+### 4. md_verify_cli (negative metadata tamper record #11 -> FAIL:METADATA_TAMPER) [rc=2]
+========================================================================
+ MD-CONFIRM RTOS: INDEPENDENT FORENSIC VERIFIER CLI                     
+ Standards: RFC 6962 + RFC 8032 + RFC 8785 + External Checkpoints       
+========================================================================
+[*] Journal Source        : /mnt/qnx-md-rtos/tmp/host_demo/tampered_leaf.log
+[*] Pinned Device PubKey  : 7ea81ac6c1fc3a9a...63f291160696a468
+[+] Loaded 65 sealed forensic records.
+
+--- AUDIT TRAIL (Showing most recent 8 of 65 sealed entries) ---
+ Seq: 119   | Type: AUTHENTIC   | Root: c32960353eb4... | Sig: 0530461d88b6... | Status: VERIFIED_AUTHENTIC_SILICON
+ Seq: 120   | Type: AUTHENTIC   | Root: 656249770242... | Sig: f2c0da96d496... | Status: VERIFIED_AUTHENTIC_SILICON
+ Seq: 121   | Type: AUTHENTIC   | Root: 5b372db04460... | Sig: 28c29b675cbd... | Status: VERIFIED_AUTHENTIC_SILICON
+ Seq: 122   | Type: GHOST_EVENT | Root: 546b5e9f0133... | Sig: e78ecaa95a42... | Status: GHOST_EVENT_WATCHDOG_TRIPPED
+ Seq: 127   | Type: GHOST_EVENT | Root: 767787122412... | Sig: f3d64a365799... | Status: GHOST_EVENT_WATCHDOG_TRIPPED
+ Seq: 128   | Type: GHOST_EVENT | Root: cfdda36ff2cc... | Sig: 4df5d77b576a... | Status: GHOST_EVENT_WATCHDOG_TRIPPED
+ Seq: 139   | Type: GHOST_EVENT | Root: c8c6f8a54148... | Sig: 7fb2093484ab... | Status: GHOST_EVENT_WATCHDOG_TRIPPED
+ Seq: 143   | Type: GHOST_EVENT | Root: 6b4fbea194dc... | Sig: 99cb159bc2d1... | Status: GHOST_EVENT_WATCHDOG_TRIPPED
+
+------------------------------------------------------------------------
+ Total Sealed Records Audited : 65
+ Recalculated Merkle Root     : 6b4fbea194dce831926d65351522a78081a1420888d5d7f64295110f137405ab
+ Last Recorded Merkle Root    : 6b4fbea194dce831926d65351522a78081a1420888d5d7f64295110f137405ab
+ STH Chain Entries Verified   : 10
+ Trust Basis                  : truncation/rollback detection is relative to checkpoint tree_size=32 root=202fe2cb152692b2... [/mnt/qnx-md-rtos/tmp/host_demo/ckpt_32.json] (source: file)
+
+--- DETECTED INTEGRITY FAILURES ---
+ [FAIL] FAIL:METADATA_TAMPER (Record #11: SHA-256(0x00||CANON) != LEAF)
+ [FAIL] FAIL:METADATA_TAMPER (Record #11: SEQ disagrees with CANON.frame_seq)
+========================================================================
+ AUDIT VERDICT                : VERIFICATION FAILED
+========================================================================
+
+### 5. md_verify_cli + RFC 3161 OpenSSL TSA (full log -> PASS, source: tsa) [rc=0]
+========================================================================
+ MD-CONFIRM RTOS: INDEPENDENT FORENSIC VERIFIER CLI                     
+ Standards: RFC 6962 + RFC 8032 + RFC 8785 + External Checkpoints       
+========================================================================
+[*] Journal Source        : /mnt/qnx-md-rtos/test-vm/captured/tamper_evident_journal.log
+[*] Pinned Device PubKey  : 7ea81ac6c1fc3a9a...63f291160696a468
+[+] Loaded 65 sealed forensic records.
+
+--- AUDIT TRAIL (Showing most recent 8 of 65 sealed entries) ---
+ Seq: 119   | Type: AUTHENTIC   | Root: c32960353eb4... | Sig: 0530461d88b6... | Status: VERIFIED_AUTHENTIC_SILICON
+ Seq: 120   | Type: AUTHENTIC   | Root: 656249770242... | Sig: f2c0da96d496... | Status: VERIFIED_AUTHENTIC_SILICON
+ Seq: 121   | Type: AUTHENTIC   | Root: 5b372db04460... | Sig: 28c29b675cbd... | Status: VERIFIED_AUTHENTIC_SILICON
+ Seq: 122   | Type: GHOST_EVENT | Root: 546b5e9f0133... | Sig: e78ecaa95a42... | Status: GHOST_EVENT_WATCHDOG_TRIPPED
+ Seq: 127   | Type: GHOST_EVENT | Root: 767787122412... | Sig: f3d64a365799... | Status: GHOST_EVENT_WATCHDOG_TRIPPED
+ Seq: 128   | Type: GHOST_EVENT | Root: cfdda36ff2cc... | Sig: 4df5d77b576a... | Status: GHOST_EVENT_WATCHDOG_TRIPPED
+ Seq: 139   | Type: GHOST_EVENT | Root: c8c6f8a54148... | Sig: 7fb2093484ab... | Status: GHOST_EVENT_WATCHDOG_TRIPPED
+ Seq: 143   | Type: GHOST_EVENT | Root: 6b4fbea194dc... | Sig: 99cb159bc2d1... | Status: GHOST_EVENT_WATCHDOG_TRIPPED
+
+------------------------------------------------------------------------
+ Total Sealed Records Audited : 65
+ Recalculated Merkle Root     : 6b4fbea194dce831926d65351522a78081a1420888d5d7f64295110f137405ab
+ Last Recorded Merkle Root    : 6b4fbea194dce831926d65351522a78081a1420888d5d7f64295110f137405ab
+ STH Chain Entries Verified   : 10
+ Trust Basis                  : truncation/rollback detection is relative to checkpoint tsr=/mnt/qnx-md-rtos/tmp/host_demo/tsa/qnx_sth.tsr tree_size=65 sth_sha256=1cc78d094fa3cdb1... (source: tsa)
+========================================================================
+ AUDIT VERDICT                : root, signature, and checkpoint/anchor verified [PASS]
+========================================================================
+
+### 6. md_verify_cli + RFC 3161 OpenSSL TSA (truncated 64/65 -> FAIL:TAIL_TRUNCATION) [rc=2]
+========================================================================
+ MD-CONFIRM RTOS: INDEPENDENT FORENSIC VERIFIER CLI                     
+ Standards: RFC 6962 + RFC 8032 + RFC 8785 + External Checkpoints       
+========================================================================
+[*] Journal Source        : /mnt/qnx-md-rtos/tmp/host_demo/truncated_64.log
+[*] Pinned Device PubKey  : 7ea81ac6c1fc3a9a...63f291160696a468
+[+] Loaded 64 sealed forensic records.
+
+--- AUDIT TRAIL (Showing most recent 8 of 64 sealed entries) ---
+ Seq: 118   | Type: AUTHENTIC   | Root: 49e874fd157b... | Sig: 4d3d8c416858... | Status: VERIFIED_AUTHENTIC_SILICON
+ Seq: 119   | Type: AUTHENTIC   | Root: c32960353eb4... | Sig: 0530461d88b6... | Status: VERIFIED_AUTHENTIC_SILICON
+ Seq: 120   | Type: AUTHENTIC   | Root: 656249770242... | Sig: f2c0da96d496... | Status: VERIFIED_AUTHENTIC_SILICON
+ Seq: 121   | Type: AUTHENTIC   | Root: 5b372db04460... | Sig: 28c29b675cbd... | Status: VERIFIED_AUTHENTIC_SILICON
+ Seq: 122   | Type: GHOST_EVENT | Root: 546b5e9f0133... | Sig: e78ecaa95a42... | Status: GHOST_EVENT_WATCHDOG_TRIPPED
+ Seq: 127   | Type: GHOST_EVENT | Root: 767787122412... | Sig: f3d64a365799... | Status: GHOST_EVENT_WATCHDOG_TRIPPED
+ Seq: 128   | Type: GHOST_EVENT | Root: cfdda36ff2cc... | Sig: 4df5d77b576a... | Status: GHOST_EVENT_WATCHDOG_TRIPPED
+ Seq: 139   | Type: GHOST_EVENT | Root: c8c6f8a54148... | Sig: 7fb2093484ab... | Status: GHOST_EVENT_WATCHDOG_TRIPPED
+
+------------------------------------------------------------------------
+ Total Sealed Records Audited : 64
+ Recalculated Merkle Root     : c8c6f8a541485b11f4b5fff635a5e47e186a44c252dd5594746b1a6dc975351c
+ Last Recorded Merkle Root    : c8c6f8a541485b11f4b5fff635a5e47e186a44c252dd5594746b1a6dc975351c
+ Trust Basis                  : truncation/rollback detection is relative to checkpoint tsr=/mnt/qnx-md-rtos/tmp/host_demo/tsa/qnx_sth.tsr tree_size=65 sth_sha256=1cc78d094fa3cdb1... (source: tsa)
+
+--- DETECTED INTEGRITY FAILURES ---
+ [FAIL] FAIL:TAIL_TRUNCATION (journal tree_size=64 < TSA STH tree_size=65)
+========================================================================
+ AUDIT VERDICT                : VERIFICATION FAILED
+========================================================================
+
+### 7. Demo PKI init-ca -> issue-cert -> md_verify_cli (--ca-pub --device-cert -> PASS) [rc=0]
+========================================================================
+ MD-CONFIRM RTOS: INDEPENDENT FORENSIC VERIFIER CLI                     
+ Standards: RFC 6962 + RFC 8032 + RFC 8785 + External Checkpoints       
+========================================================================
+[*] Journal Source        : /mnt/qnx-md-rtos/test-vm/captured/tamper_evident_journal.log
+[*] Trust Anchor (DEMO CA): /mnt/qnx-md-rtos/tmp/host_demo/pki/ca_pub.hex (cert: /mnt/qnx-md-rtos/tmp/host_demo/pki/qnx_node01_cert.json)
+[+] Loaded 65 sealed forensic records.
+
+--- AUDIT TRAIL (Showing most recent 8 of 65 sealed entries) ---
+ Seq: 119   | Type: AUTHENTIC   | Root: c32960353eb4... | Sig: 0530461d88b6... | Status: VERIFIED_AUTHENTIC_SILICON
+ Seq: 120   | Type: AUTHENTIC   | Root: 656249770242... | Sig: f2c0da96d496... | Status: VERIFIED_AUTHENTIC_SILICON
+ Seq: 121   | Type: AUTHENTIC   | Root: 5b372db04460... | Sig: 28c29b675cbd... | Status: VERIFIED_AUTHENTIC_SILICON
+ Seq: 122   | Type: GHOST_EVENT | Root: 546b5e9f0133... | Sig: e78ecaa95a42... | Status: GHOST_EVENT_WATCHDOG_TRIPPED
+ Seq: 127   | Type: GHOST_EVENT | Root: 767787122412... | Sig: f3d64a365799... | Status: GHOST_EVENT_WATCHDOG_TRIPPED
+ Seq: 128   | Type: GHOST_EVENT | Root: cfdda36ff2cc... | Sig: 4df5d77b576a... | Status: GHOST_EVENT_WATCHDOG_TRIPPED
+ Seq: 139   | Type: GHOST_EVENT | Root: c8c6f8a54148... | Sig: 7fb2093484ab... | Status: GHOST_EVENT_WATCHDOG_TRIPPED
+ Seq: 143   | Type: GHOST_EVENT | Root: 6b4fbea194dc... | Sig: 99cb159bc2d1... | Status: GHOST_EVENT_WATCHDOG_TRIPPED
+
+------------------------------------------------------------------------
+ Total Sealed Records Audited : 65
+ Recalculated Merkle Root     : 6b4fbea194dce831926d65351522a78081a1420888d5d7f64295110f137405ab
+ Last Recorded Merkle Root    : 6b4fbea194dce831926d65351522a78081a1420888d5d7f64295110f137405ab
+ STH Chain Entries Verified   : 10
+ Trust Basis                  : truncation/rollback detection is relative to checkpoint tree_size=32 root=202fe2cb152692b2... [/mnt/qnx-md-rtos/tmp/host_demo/ckpt_32.json] (source: file)
+========================================================================
+ AUDIT VERDICT                : root, signature, and checkpoint/anchor verified [PASS]
+========================================================================
+
+### 8. Demo PKI revoke -> md_verify_cli (--revoked -> FAIL:KEY_REVOKED) [rc=2]
+========================================================================
+ MD-CONFIRM RTOS: INDEPENDENT FORENSIC VERIFIER CLI                     
+ Standards: RFC 6962 + RFC 8032 + RFC 8785 + External Checkpoints       
+========================================================================
+[*] Journal Source        : /mnt/qnx-md-rtos/test-vm/captured/tamper_evident_journal.log
+[*] Trust Anchor (DEMO CA): /mnt/qnx-md-rtos/tmp/host_demo/pki/ca_pub.hex (cert: /mnt/qnx-md-rtos/tmp/host_demo/pki/qnx_node01_cert.json)
+[*] Revocation List       : /mnt/qnx-md-rtos/tmp/host_demo/pki/revoked.txt
+[+] Loaded 0 sealed forensic records.
+
+------------------------------------------------------------------------
+ Total Sealed Records Audited : 0
+ Recalculated Merkle Root     : 
+ Last Recorded Merkle Root    : 
+ STH Chain Entries Verified   : 0
+
+--- DETECTED INTEGRITY FAILURES ---
+ [FAIL] FAIL:KEY_REVOKED (Initial device key 7ea81ac6c1fc3a9a is revoked)
+========================================================================
+ AUDIT VERDICT                : VERIFICATION FAILED
+========================================================================
+
+### 9. Demo PKI key rotation record [rc=0]
+[DEMO PKI] DEMO ONLY - NOT FOR PRODUCTION USE: Software keys stored on filesystem without HSM/TPM hardware protection.
+[DEMO PKI] Issued key rotation (ca): 7ea81ac6c1fc3a9a -> 339df2941e272d55 at tree_size>65 -> /mnt/qnx-md-rtos/tmp/host_demo/pki/rotation.json
+
+### 10. Optical flow vs synthetic CAN speed demo (SIMULATED) [rc=0]
+[md_can_flow] STATUS: SIMULATED (host-only; real vehicle CAN/camera NOT YET MEASURED)
+  1) Matched stream      : verdict=VERIFIED_FLOW_CAN_MATCH allow=True nrmse=0.0034 pearson_r=1.0000
+  2) Replay vs CAN brake : verdict=FLAG_REPLAY_CAN_SPEED_MISMATCH allow=False nrmse=0.9065 pearson_r=-1.0000 (nrmse=0.906 > max_nrmse=0.250; pearson_r=-1.000 < min_corr=0.750)
+
+### 11. Solana outbox dry-run (all 10 QNX STHs) [rc=0]
+========================================================================
+ MD-CONFIRM RTOS: HOST-SIDE SOLANA MAINNET ANCHORING ENGINE             
+ Architecture: Off-path async anchoring (QNX kernel is zero-dependency) 
+ Protocol: SPL Memo v1 on Solana Mainnet Ledger                         
+========================================================================
+[*] Anchor Outbox   : /mnt/qnx-md-rtos/test-vm/captured/anchor_outbox.jsonl
+[+] Anchored tree_size=32 event=PERIODIC_STH tx=DRY_RUN_TX_32 memo=MDFP1|qnx-8.0-adas-node-01|202fe2cb152692b22fca6c91bd54b814414ebb98c92ea52eee5e6f6fb5702b27|32
+[+] Anchored tree_size=33 event=GHOST_EVENT tx=DRY_RUN_TX_33 memo=MDFP1|qnx-8.0-adas-node-01|f576a3331d40c2d92eec7e3a325d61fa063b9954e4fcdc81d3f02c4c7e30b7bb|33
+[+] Anchored tree_size=34 event=GHOST_EVENT tx=DRY_RUN_TX_34 memo=MDFP1|qnx-8.0-adas-node-01|3a312fbd3727c10fe4ac6f4bbac87c6b3801fb282523421bfdd4b6353a8288d9|34
+[+] Anchored tree_size=35 event=GHOST_EVENT tx=DRY_RUN_TX_35 memo=MDFP1|qnx-8.0-adas-node-01|b60d75da303be75518869f57f22ddc7827259e1ae0d0bb0b8f5abbbd02e9cb74|35
+[+] Anchored tree_size=38 event=GHOST_EVENT tx=DRY_RUN_TX_38 memo=MDFP1|qnx-8.0-adas-node-01|d98eae075ae856ec630004b78489b1d9d88d4d7d13d647923be8f30e11258b08|38
+[+] Anchored tree_size=61 event=GHOST_EVENT tx=DRY_RUN_TX_61 memo=MDFP1|qnx-8.0-adas-node-01|546b5e9f01335ef4a8f36eee0ee1f8ea6635ab77520db05f2cbbf01af1f37d13|61
+[+] Anchored tree_size=62 event=GHOST_EVENT tx=DRY_RUN_TX_62 memo=MDFP1|qnx-8.0-adas-node-01|7677871224127dae42e6cdccf37675d10886ea51cf20b7f18cb9ae386bbf5a6f|62
+[+] Anchored tree_size=63 event=GHOST_EVENT tx=DRY_RUN_TX_63 memo=MDFP1|qnx-8.0-adas-node-01|cfdda36ff2ccfb0e59482a6c85b12e3dc74f78161d4ade8f3cf6905526fb4eee|63
+[+] Anchored tree_size=64 event=GHOST_EVENT tx=DRY_RUN_TX_64 memo=MDFP1|qnx-8.0-adas-node-01|c8c6f8a541485b11f4b5fff635a5e47e186a44c252dd5594746b1a6dc975351c|64
+[+] Anchored tree_size=65 event=GHOST_EVENT tx=DRY_RUN_TX_65 memo=MDFP1|qnx-8.0-adas-node-01|6b4fbea194dce831926d65351522a78081a1420888d5d7f64295110f137405ab|65
+
+### 12. Solana Mainnet-Beta live anchor verification (full log -> PASS, source: solana) [rc=0]
+========================================================================
+ MD-CONFIRM RTOS: INDEPENDENT FORENSIC VERIFIER CLI                     
+ Standards: RFC 6962 + RFC 8032 + RFC 8785 + External Checkpoints       
+========================================================================
+[*] Journal Source        : /mnt/qnx-md-rtos/test-vm/captured/tamper_evident_journal.log
+[*] Pinned Device PubKey  : 7ea81ac6c1fc3a9a...63f291160696a468
+[+] Loaded 65 sealed forensic records.
+
+--- AUDIT TRAIL (Showing most recent 8 of 65 sealed entries) ---
+ Seq: 119   | Type: AUTHENTIC   | Root: c32960353eb4... | Sig: 0530461d88b6... | Status: VERIFIED_AUTHENTIC_SILICON
+ Seq: 120   | Type: AUTHENTIC   | Root: 656249770242... | Sig: f2c0da96d496... | Status: VERIFIED_AUTHENTIC_SILICON
+ Seq: 121   | Type: AUTHENTIC   | Root: 5b372db04460... | Sig: 28c29b675cbd... | Status: VERIFIED_AUTHENTIC_SILICON
+ Seq: 122   | Type: GHOST_EVENT | Root: 546b5e9f0133... | Sig: e78ecaa95a42... | Status: GHOST_EVENT_WATCHDOG_TRIPPED
+ Seq: 127   | Type: GHOST_EVENT | Root: 767787122412... | Sig: f3d64a365799... | Status: GHOST_EVENT_WATCHDOG_TRIPPED
+ Seq: 128   | Type: GHOST_EVENT | Root: cfdda36ff2cc... | Sig: 4df5d77b576a... | Status: GHOST_EVENT_WATCHDOG_TRIPPED
+ Seq: 139   | Type: GHOST_EVENT | Root: c8c6f8a54148... | Sig: 7fb2093484ab... | Status: GHOST_EVENT_WATCHDOG_TRIPPED
+ Seq: 143   | Type: GHOST_EVENT | Root: 6b4fbea194dc... | Sig: 99cb159bc2d1... | Status: GHOST_EVENT_WATCHDOG_TRIPPED
+
+------------------------------------------------------------------------
+ Total Sealed Records Audited : 65
+ Recalculated Merkle Root     : 6b4fbea194dce831926d65351522a78081a1420888d5d7f64295110f137405ab
+ Last Recorded Merkle Root    : 6b4fbea194dce831926d65351522a78081a1420888d5d7f64295110f137405ab
+ STH Chain Entries Verified   : 10
+ Trust Basis                  : truncation/rollback detection is relative to checkpoint tx=54DXk4XAxhuQNDrb... size_or_seq=65 root=6b4fbea194dce831... (source: solana)
+========================================================================
+ AUDIT VERDICT                : root, signature, and checkpoint/anchor verified [PASS]
+========================================================================
+
+### 13. Solana Mainnet-Beta live anchor negative truncation (64/65 -> FAIL:TAIL_TRUNCATION) [rc=2]
+========================================================================
+ MD-CONFIRM RTOS: INDEPENDENT FORENSIC VERIFIER CLI                     
+ Standards: RFC 6962 + RFC 8032 + RFC 8785 + External Checkpoints       
+========================================================================
+[*] Journal Source        : /mnt/qnx-md-rtos/tmp/host_demo/truncated_64.log
+[*] Pinned Device PubKey  : 7ea81ac6c1fc3a9a...63f291160696a468
+[+] Loaded 64 sealed forensic records.
+
+--- AUDIT TRAIL (Showing most recent 8 of 64 sealed entries) ---
+ Seq: 118   | Type: AUTHENTIC   | Root: 49e874fd157b... | Sig: 4d3d8c416858... | Status: VERIFIED_AUTHENTIC_SILICON
+ Seq: 119   | Type: AUTHENTIC   | Root: c32960353eb4... | Sig: 0530461d88b6... | Status: VERIFIED_AUTHENTIC_SILICON
+ Seq: 120   | Type: AUTHENTIC   | Root: 656249770242... | Sig: f2c0da96d496... | Status: VERIFIED_AUTHENTIC_SILICON
+ Seq: 121   | Type: AUTHENTIC   | Root: 5b372db04460... | Sig: 28c29b675cbd... | Status: VERIFIED_AUTHENTIC_SILICON
+ Seq: 122   | Type: GHOST_EVENT | Root: 546b5e9f0133... | Sig: e78ecaa95a42... | Status: GHOST_EVENT_WATCHDOG_TRIPPED
+ Seq: 127   | Type: GHOST_EVENT | Root: 767787122412... | Sig: f3d64a365799... | Status: GHOST_EVENT_WATCHDOG_TRIPPED
+ Seq: 128   | Type: GHOST_EVENT | Root: cfdda36ff2cc... | Sig: 4df5d77b576a... | Status: GHOST_EVENT_WATCHDOG_TRIPPED
+ Seq: 139   | Type: GHOST_EVENT | Root: c8c6f8a54148... | Sig: 7fb2093484ab... | Status: GHOST_EVENT_WATCHDOG_TRIPPED
+
+------------------------------------------------------------------------
+ Total Sealed Records Audited : 64
+ Recalculated Merkle Root     : c8c6f8a541485b11f4b5fff635a5e47e186a44c252dd5594746b1a6dc975351c
+ Last Recorded Merkle Root    : c8c6f8a541485b11f4b5fff635a5e47e186a44c252dd5594746b1a6dc975351c
+ Trust Basis                  : truncation/rollback detection is relative to checkpoint tx=54DXk4XAxhuQNDrb... size_or_seq=65 root=6b4fbea194dce831... (source: solana)
+
+--- DETECTED INTEGRITY FAILURES ---
+ [FAIL] FAIL:TAIL_TRUNCATION (Solana anchor at 65 exceeds journal records 64)
+========================================================================
+ AUDIT VERDICT                : VERIFICATION FAILED
+========================================================================

@@ -4,8 +4,12 @@
 // Works exclusively on the private frame copy sent over QNX IPC by md-capture
 // and re-verifies frame_sha256 before correlation (zero reads from /mdfp_frame_shm).
 
+#ifndef _QNX_SOURCE
 #define _QNX_SOURCE
+#endif
+#ifndef _POSIX_C_SOURCE
 #define _POSIX_C_SOURCE 200809L
+#endif
 
 #include <iostream>
 #include <memory>
@@ -13,6 +17,7 @@
 #include <cmath>
 #include <cstring>
 #include <cstdlib>
+#include <cerrno>
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/neutrino.h>
@@ -108,8 +113,21 @@ int main(int argc, char* argv[]) {
     auto smsg = std::make_unique<MdfpSealMsg>();
 
     while (true) {
+        std::memset(msg.get(), 0, sizeof(struct _pulse));
         int rcvid = MsgReceive(attach->chid, msg.get(), sizeof(*msg), nullptr);
         if (rcvid < 0) continue;
+        if (rcvid == 0) {
+            struct _pulse p{};
+            std::memcpy(&p, msg.get(), sizeof(p));
+            if (p.code == _PULSE_CODE_DISCONNECT) {
+                ConnectDetach(p.scoid);
+            }
+            continue;
+        }
+        if (msg->type != 0x0100) {
+            MsgError(rcvid, ENOSYS);
+            continue;
+        }
 
         uint64_t t_verify_start = mdfp_cycles();
 
@@ -158,7 +176,7 @@ int main(int argc, char* argv[]) {
 
         MsgReply(rcvid, 0, &reply, sizeof(reply));
 
-        if (dec.allow && seal_coid >= 0) {
+        if (dec.allow) {
             std::memset(smsg.get(), 0, sizeof(*smsg));
             smsg->type = 0x0200;
             smsg->frame_seq = msg->frame_seq;
@@ -180,7 +198,11 @@ int main(int argc, char* argv[]) {
             mdfp::ingest::copy_cstr_bounded(smsg->k_ref_version, sizeof(smsg->k_ref_version), MDFP_DEFAULT_KREF_VERSION);
 
             MdfpSealReply sreply;
-            MsgSend(seal_coid, smsg.get(), sizeof(*smsg), &sreply, sizeof(sreply));
+            std::memset(&sreply, 0, sizeof(sreply));
+            mdfp_qnx_send_retry(
+                &seal_coid, MDFP_ATTACH_SEAL,
+                smsg.get(), sizeof(*smsg),
+                &sreply, sizeof(sreply));
         }
     }
 

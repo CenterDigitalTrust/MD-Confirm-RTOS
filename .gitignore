@@ -13,6 +13,7 @@ build/
 
 # Logs and runtime data
 *.log
+!docs/evidence/qnx_8_qemu/*.log
 /tmp/
 evidence/
 !docs/evidence/

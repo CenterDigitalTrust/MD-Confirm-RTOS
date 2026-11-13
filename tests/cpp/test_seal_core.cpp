@@ -181,6 +181,7 @@ void test_seal_engine_sth_outbox_and_recovery() {
                 } else {
                     sth32_sha256 = out.sth_sha256;
                     assert(out.sth_canonical_json.find("\"tree_size\":32") != std::string::npos);
+                    assert(out.sth_canonical_json.find("\"timestamp\":1700000000032000000") != std::string::npos);
                     assert(out.outbox_line.find("\"event\":\"PERIODIC_STH\"") != std::string::npos);
                 }
             } else {

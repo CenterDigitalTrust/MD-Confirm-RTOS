@@ -2,12 +2,17 @@
 // Hardware Sabotage & Cable-Cut Watchdog (QNX Asynchronous Pulses & Timers)
 // Project: MD-Confirm RTOS (QNX Global Hackathon) | Track: Automotive & Mobility
 
+#ifndef _QNX_SOURCE
 #define _QNX_SOURCE
+#endif
+#ifndef _POSIX_C_SOURCE
 #define _POSIX_C_SOURCE 200809L
+#endif
 
 #include <iostream>
 #include <cstring>
 #include <cstdlib>
+#include <cerrno>
 #include <unistd.h>
 #include <sys/neutrino.h>
 #include <sys/dispatch.h>
@@ -72,10 +77,21 @@ int main() {
 
     while (true) {
         struct _pulse pulse;
+        std::memset(&pulse, 0, sizeof(pulse));
         int rcvid = MsgReceive(attach->chid, &pulse, sizeof(pulse), nullptr);
         if (rcvid < 0) continue;
 
-        if (rcvid == 0) {
+        if (rcvid > 0) {
+            MsgError(rcvid, ENOSYS);
+            continue;
+        }
+
+        if (pulse.code == _PULSE_CODE_DISCONNECT) {
+            ConnectDetach(pulse.scoid);
+            continue;
+        }
+
+        {
             uint64_t now_ns = mdfp_get_ns();
 
             if (pulse.code == MDFP_PULSE_WATCHDOG_HEART) {
@@ -94,30 +110,30 @@ int main() {
                               << " Triggering Emergency Evidence Sealing (GHOST_EVENT_WATCHDOG)...       \n"
                               << "************************************************************************\n" << std::endl;
 
-                    if (seal_coid >= 0) {
-                        MdfpSealMsg smsg;
-                        std::memset(&smsg, 0, sizeof(smsg));
-                        smsg.type = 0x0200;
-                        smsg.frame_seq = last_seen_seq + 1;
-                        smsg.scenario = SCENARIO_5_CABLE_SABOTAGE;
-                        smsg.hw_eof_ns = now_ns;
-                        smsg.capture_cycles = mdfp_cycles();
-                        smsg.ncc = 0.0;
-                        smsg.pce_linear = 0.0;
-                        smsg.pce_db = 0.0;
-                        smsg.ncc_threshold = MDFP_NCC_THRESHOLD;
-                        smsg.pce_threshold_linear = MDFP_PCE_THRESHOLD_LINEAR;
-                        smsg.verify_duration_ns = 0;
-                        mdfp::ingest::copy_cstr_bounded(smsg.sensor_id, sizeof(smsg.sensor_id), MDFP_DEFAULT_SENSOR_ID);
-                        mdfp::ingest::copy_cstr_bounded(smsg.k_ref_id, sizeof(smsg.k_ref_id), MDFP_DEFAULT_KREF_ID);
-                        mdfp::ingest::copy_cstr_bounded(smsg.k_ref_version, sizeof(smsg.k_ref_version), MDFP_DEFAULT_KREF_VERSION);
-                        mdfp::ingest::copy_cstr_bounded(smsg.verdict, sizeof(smsg.verdict), "GHOST_EVENT_WATCHDOG_TRIPPED");
-                        smsg.is_ghost_event = true;
-                        mdfp::ingest::copy_cstr_bounded(smsg.raw_sha256, sizeof(smsg.raw_sha256), "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
+                    MdfpSealMsg smsg;
+                    std::memset(&smsg, 0, sizeof(smsg));
+                    smsg.type = 0x0200;
+                    smsg.frame_seq = last_seen_seq + 1;
+                    smsg.scenario = SCENARIO_5_CABLE_SABOTAGE;
+                    smsg.hw_eof_ns = now_ns;
+                    smsg.capture_cycles = mdfp_cycles();
+                    smsg.ncc = 0.0;
+                    smsg.pce_linear = 0.0;
+                    smsg.pce_db = 0.0;
+                    smsg.ncc_threshold = MDFP_NCC_THRESHOLD;
+                    smsg.pce_threshold_linear = MDFP_PCE_THRESHOLD_LINEAR;
+                    smsg.verify_duration_ns = 0;
+                    mdfp::ingest::copy_cstr_bounded(smsg.sensor_id, sizeof(smsg.sensor_id), MDFP_DEFAULT_SENSOR_ID);
+                    mdfp::ingest::copy_cstr_bounded(smsg.k_ref_id, sizeof(smsg.k_ref_id), MDFP_DEFAULT_KREF_ID);
+                    mdfp::ingest::copy_cstr_bounded(smsg.k_ref_version, sizeof(smsg.k_ref_version), MDFP_DEFAULT_KREF_VERSION);
+                    mdfp::ingest::copy_cstr_bounded(smsg.verdict, sizeof(smsg.verdict), "GHOST_EVENT_WATCHDOG_TRIPPED");
+                    smsg.is_ghost_event = true;
+                    mdfp::ingest::copy_cstr_bounded(smsg.raw_sha256, sizeof(smsg.raw_sha256), "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
 
-                        MdfpSealReply sreply;
-                        MsgSend(seal_coid, &smsg, sizeof(smsg), &sreply, sizeof(sreply));
-                        std::cout << "[md-watchdog] GHOST_EVENT sealed into Merkle Leaf #" 
+                    MdfpSealReply sreply;
+                    std::memset(&sreply, 0, sizeof(sreply));
+                    if (mdfp_qnx_send_retry(&seal_coid, MDFP_ATTACH_SEAL, &smsg, sizeof(smsg), &sreply, sizeof(sreply)) >= 0) {
+                        std::cout << "[md-watchdog] GHOST_EVENT sealed into Merkle Leaf #"
                                   << sreply.leaf_index << " | Root: " << std::string(sreply.merkle_root).substr(0, 16) << "..." << std::endl;
                     }
                 }

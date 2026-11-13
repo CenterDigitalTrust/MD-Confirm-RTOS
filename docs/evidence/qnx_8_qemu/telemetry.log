@@ -1,0 +1,11 @@
+========================================================
+ [md-telemetry] Decoupled External Telemetry Gateway     
+ Policy: SCHED_RR Priority 8 (Low Background)    
+ Architecture: Isolated Process on 0.0.0.0:9090
+ SHM IPC: Lock-Free Seqlock (/mdfp_stats_shm)
+ Journal: /data/mdfp_evidence/tamper_evident_journal.log (O_RDONLY)
+ Security: Zero access to Ed25519 device private key     
+========================================================
+
+[md-telemetry] Attached to stats shm in PROT_READ mode.
+[md-telemetry] Listening on http://0.0.0.0:9090

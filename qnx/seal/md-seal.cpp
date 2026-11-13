@@ -3,8 +3,12 @@
 // Project: MD-Confirm RTOS (QNX Global Hackathon) | Track: Automotive & Mobility
 // Signer Backend: FileSigner (software TweetNaCl, NO hardware key protection).
 
+#ifndef _QNX_SOURCE
 #define _QNX_SOURCE
+#endif
+#ifndef _POSIX_C_SOURCE
 #define _POSIX_C_SOURCE 200809L
+#endif
 
 #include <iostream>
 #include <fstream>
@@ -13,6 +17,7 @@
 #include <string>
 #include <cstring>
 #include <cstdlib>
+#include <cerrno>
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/neutrino.h>
@@ -106,9 +111,26 @@ int main(int argc, char** argv) {
     std::cout << "[md-seal] Registered QNX channel: " << MDFP_ATTACH_SEAL << std::endl;
 
     while (true) {
-        MdfpSealMsg msg;
-        int rcvid = MsgReceive(attach->chid, &msg, sizeof(msg), nullptr);
+        union SealRx {
+            struct _pulse pulse;
+            MdfpSealMsg msg;
+        } rx;
+        std::memset(&rx, 0, sizeof(rx));
+        int rcvid = MsgReceive(attach->chid, &rx, sizeof(rx), nullptr);
         if (rcvid < 0) continue;
+
+        if (rcvid == 0) {
+            if (rx.pulse.code == _PULSE_CODE_DISCONNECT) {
+                ConnectDetach(rx.pulse.scoid);
+            }
+            continue;
+        }
+
+        const MdfpSealMsg& msg = rx.msg;
+        if (msg.type != 0x0200) {
+            MsgError(rcvid, ENOSYS);
+            continue;
+        }
 
         mdfp::SealInput in;
         in.hw_eof_ns = msg.hw_eof_ns;
