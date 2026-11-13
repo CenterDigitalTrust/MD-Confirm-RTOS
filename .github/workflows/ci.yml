@@ -13,10 +13,11 @@ on:
 # SDP 8.0 headers and runtime libraries (<sys/neutrino.h>, <sys/dispatch.h>,
 # <sys/resmgr.h>, qcc/q++). Here CI validates host Python tooling plus
 # host-portable C/C++ units in `qnx/common/`:
-#   - mdfp_seqlock.h (ThreadSanitizer concurrent stress test)
-#   - mdfp_canon.h   (RFC 8785 JCS known-answer tests + ASan/UBSan)
-#   - mdfp_http.h    (HTTP parser unit tests + libFuzzer/ASan/UBSan)
+#   - mdfp_seqlock.h   (ThreadSanitizer concurrent stress test)
+#   - mdfp_canon.h     (RFC 8785 JCS known-answer tests + ASan/UBSan)
+#   - mdfp_http.h      (HTTP parser unit tests + libFuzzer/ASan/UBSan)
 #   - mdfp_crypto.h + tweetnacl.c (RFC 8032 Ed25519 + SHA-256 KATs + ASan/UBSan)
+#   - mdfp_merkle.h + mdfp_seal_core.h (RFC 6962 + STH + outbox + restart recovery)
 
 jobs:
   python-lint-and-test:
@@ -29,6 +30,9 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+
+      - name: Verify OpenSSL CLI for RFC 3161 TSA tests
+        run: openssl version
 
       - name: Install Python test dependencies
         run: python -m pip install --upgrade pip && pip install pytest ruff cryptography
@@ -68,9 +72,13 @@ jobs:
           clang++ -std=c++17 -O2 -g -Wall -Wextra -Werror \
             -fsanitize=address,undefined -fno-omit-frame-pointer -Iqnx/common \
             tests/cpp/test_http_parser.cpp -o build/test_http_parser
+          clang++ -std=c++17 -O2 -g -Wall -Wextra -Werror -D_POSIX_C_SOURCE=200809L \
+            -fsanitize=address,undefined -fno-omit-frame-pointer -Iqnx/common \
+            tests/cpp/test_seal_core.cpp build/tweetnacl_asan.o -o build/test_seal_core
           ASAN_OPTIONS=detect_leaks=1 ./build/test_ed25519_kat
           ASAN_OPTIONS=detect_leaks=1 ./build/test_canon_kat
           ASAN_OPTIONS=detect_leaks=1 ./build/test_http_parser
+          ASAN_OPTIONS=detect_leaks=1 ./build/test_seal_core
 
       - name: Build & run multi-threaded Seqlock test (Clang ThreadSanitizer + GCC UBSan)
         run: |

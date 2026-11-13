@@ -44,7 +44,7 @@ In mission-critical embedded systems and forensic computing, acknowledging threa
 * **Simulation in QEMU x86_64 (`SIMULATED`):** All QNX test scenarios and pipeline benchmarks are demonstrated on **SYNTHETIC frames** inside QEMU x86_64 running QNX SDP 8.0. Virtualized latency and jitter measurements do not substitute for bare-metal hardware validation (`NOT YET MEASURED`).
 * **Scenario 4 (Synthetic Injection with Pre-applied Noise — `ROADMAP`):** Frame-rhythm / jitter blocking for frames carrying pre-applied $K_{\text{REF}}$ noise is not yet enforced in `md-verify` (`allow = true` currently logs the scenario as flagged; real camera timing ROC is `NOT YET MEASURED`).
 * **Key Protection Model:** On this hackathon evaluation bench, the Ed25519 signing seed (`md-seal.cpp`) and synthetic reference pattern $K_{\text{REF}}$ are embedded in source code for deterministic demo reproducibility (no HSM/TPM). Production deployment requires hardware Secure Boot and a dedicated HSM or TPM 2.0.
-* **Journal Property:** The forensic evidence journal is **tamper-evident**, not physically immutable WORM media; physical write-protection relies on the underlying storage controller, and see [`docs/LIMITATIONS.md`](docs/LIMITATIONS.md) for current proof/truncation boundaries.
+* **Journal Property:** The forensic evidence journal is **tamper-evident**, not physically immutable WORM media; physical write-protection relies on the underlying storage controller. **Modification, rollback, and tail-truncation detection hold strictly relative to an external checkpoint** (`--checkpoint STH_FILE`, `--solana-tx`, or `--tsa-tsr` + `--tsa-ca`; without one, tail truncation or full-log rollback cannot be detected). See [`docs/LIMITATIONS.md`](docs/LIMITATIONS.md) for current boundaries.
 
 | # | Threat Scenario | Current Status | Technical Mechanism & Rationale |
 |---|-----------------|----------------|----------------------------------|
@@ -55,7 +55,7 @@ In mission-critical embedded systems and forensic computing, acknowledging threa
 | 5 | Optical playback in front of lens (screen attack) | **BOUNDARY** | Outside silicon sensor perimeter (requires active optical depth sensing) |
 | 6 | Hardware bus emulator on FPGA with precise rhythm | **BOUNDARY** | Physical CSI-2 bus timing can be mimicked by custom FPGA hardware |
 | 7 | MIPI cable severed or camera power loss | **YES** (`SIMULATED`) | `md-watchdog`: Asynchronous QNX pulse timeout ($> 50\text{ ms}$) trips emergency `GHOST_EVENT` |
-| 8 | Tampering with stored records after capture | **PARTIAL** (`SIMULATED`) | Detects broken `MERKLE_ROOT` chains and invalid RFC 8032 Ed25519 signatures; leaf recomputation, consistency proofs, and tail-truncation detection remain on `ROADMAP` |
+| 8 | Tampering with stored records after capture | **YES relative to external checkpoint** (`SIMULATED` / host-tested) | Detects modified metadata (`CANON` + `LEAF`), duplicated leaves, reordered/swapped records, invalid Ed25519 signatures, broken `prev_sth_sha256` STH chains, and rollback/tail truncation **relative to an external checkpoint** (trusted STH file, Solana memo, or RFC 3161 TSA) via strict RFC 6962 inclusion & consistency proofs. Without an external checkpoint, tail truncation is not detectable (`WARNING` emitted) |
 | 9 | Root exploit on node / private key extraction | **BOUNDARY** | Requires hardware TPM 2.0 / Secure Enclave & Secure Boot (`ROADMAP`) |
 
 ---
@@ -170,14 +170,17 @@ Full details live in **[`docs/LIMITATIONS.md`](docs/LIMITATIONS.md)**. Key const
 
 ---
 
-## 8. Independent Verifier & Ed25519 Signatures (software, TweetNaCl)
+## 8. Independent Verifier & Verifiable Append-Only Log (software, TweetNaCl)
 
-1. **Never Trust the Node:** Without `--solana-tx` the root is taken from the node; full independence requires the on-chain check (and consistency verification against anchored roots).
-2. **Pinned Device Public Key:** Journal records carry RFC 8032 Ed25519 signatures generated with TweetNaCl:
+1. **Trust Basis (Relative to External Checkpoint):** Modification, rollback, and tail-truncation detection hold **strictly relative to an external checkpoint** (`--checkpoint STH_FILE`, `--solana-tx`, or `--tsa-tsr` + `--tsa-ca`). The verifier always prints its trust basis (`truncation/rollback detection is relative to checkpoint X (source: file | solana | tsa | none)`). Without an external checkpoint (`source: none`), the node-supplied log is trusted for head freshness and the verifier prints `WARNING: tail truncation NOT detectable.`
+2. **Pinned Device Public Key:** Journal records and Signed Tree Heads (STHs) carry RFC 8032 Ed25519 signatures generated with TweetNaCl:
    * Device Public Key: `7ea81ac6c1fc3a9a567a7693e3d930a5c140a3a05fa270d763f291160696a468`
-3. **Merkle Root Verification & Upgrade Roadmap:** Currently [`host/verify-cli/md_verify_cli.py`](host/verify-cli/md_verify_cli.py) verifies per-record Ed25519 signatures over `"MDFP1\n" || root` and recomputes the binary tree over recorded `LEAF:` hashes. Leaf-preimage reconstruction, strict RFC 6962 §2.1 promotion, inclusion/consistency proofs, and tail-truncation detection are tracked on `ROADMAP` in [`docs/LIMITATIONS.md`](docs/LIMITATIONS.md).
+3. **Strict RFC 6962 Trees, Chained STHs, & Event-Triggered Anchoring:**
+   * [`host/verify-cli/merkle_rfc6962.py`](host/verify-cli/merkle_rfc6962.py) and [`qnx/common/mdfp_merkle.h`](qnx/common/mdfp_merkle.h) implement strict RFC 6962 §§2.1, 2.1.1, and 2.1.2 (`merkle_tree_hash`, `inclusion_proof`, `verify_inclusion`, `consistency_proof`, `verify_consistency`) without odd-leaf duplication.
+   * [`qnx/common/mdfp_seal_core.h`](qnx/common/mdfp_seal_core.h) (`SealEngine`, wrapped by [`qnx/seal/md-seal.cpp`](qnx/seal/md-seal.cpp), `UNTESTED ON QNX` binary) appends `| CANON: <rfc8785_json>` to journal entries, reloads prior journal/`sth.log` state on restart, emits chained RFC 8785 STHs (`{version, device_id, tree_size, root_hash, timestamp, prev_sth_sha256, key_id}` + Ed25519 signature) to `sth.log` every 32 leaves and on every `GHOST_EVENT`, and writes event-triggered anchor requests to `anchor_outbox.jsonl` with zero network code on QNX.
+   * [`host/anchor/md_anchor.py`](host/anchor/md_anchor.py) supports `--outbox <path>` (plus `--dry-run`) to consume pending `(root, tree_size)` requests with a sidecar cursor. Optional host script [`host/tsa/md_tsa.py`](host/tsa/md_tsa.py) requests an RFC 3161 `.tsr` timestamp for `sha256(STH)` from any configurable `--tsa-url` (none hardcoded), verified by `md_verify_cli.py --tsa-tsr ... --tsa-ca ...` via `openssl ts -verify`.
 4. **Factual CLI Output:**
-   `root and signature verified [PASS]` or `root, signature, and on-chain anchor verified [PASS]`.
+   `root and signature verified [PASS]` (with `WARNING: tail truncation NOT detectable.` when `source: none`) or `root, signature, and checkpoint/anchor verified [PASS]`.
 
 ---
 

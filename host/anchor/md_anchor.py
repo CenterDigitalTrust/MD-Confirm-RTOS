@@ -146,13 +146,117 @@ def broadcast_memo_anchor(memo_text: str, rpc_url: str, privkey_b58: str):
     else:
         raise RuntimeError(f"Solana RPC error: {resp_send}")
 
+def format_memo_payload(device_id: str, root_hash: str, tree_size: int) -> str:
+    return f"MDFP1|{device_id}|{root_hash}|{tree_size}"
+
+
+def _load_cursor(state_path: str) -> dict:
+    if not state_path or not os.path.exists(state_path):
+        return {"consumed_lines": 0, "anchored": []}
+    with open(state_path, "r", encoding="utf-8") as fh:
+        data = json.load(fh)
+    if not isinstance(data, dict):
+        return {"consumed_lines": 0, "anchored": []}
+    data.setdefault("consumed_lines", 0)
+    data.setdefault("anchored", [])
+    return data
+
+
+def _save_cursor(state_path: str, state: dict) -> None:
+    parent = os.path.dirname(os.path.abspath(state_path))
+    if parent:
+        os.makedirs(parent, exist_ok=True)
+    tmp = f"{state_path}.tmp"
+    with open(tmp, "w", encoding="utf-8") as fh:
+        json.dump(state, fh, indent=2)
+    os.replace(tmp, state_path)
+
+
+def consume_outbox(
+    outbox_path: str,
+    rpc_url: str,
+    privkey_b58: str,
+    *,
+    state_path: str | None = None,
+    device_id_override: str | None = None,
+    dry_run: bool = False,
+    broadcast_fn=None,
+) -> list[dict]:
+    """Consume pending anchor requests from md-seal's append-only anchor_outbox.jsonl.
+
+    Tracks the last consumed line in a separate sidecar cursor file so md-seal
+    can continue appending to anchor_outbox.jsonl without write races.
+    """
+    if not os.path.exists(outbox_path):
+        return []
+
+    cursor_file = state_path or f"{outbox_path}.cursor.json"
+    state = _load_cursor(cursor_file)
+    offset = int(state.get("consumed_lines", 0))
+
+    with open(outbox_path, "r", encoding="utf-8") as fh:
+        all_lines = fh.readlines()
+
+    if offset > len(all_lines):
+        offset = 0
+
+    broadcaster = broadcast_fn or broadcast_memo_anchor
+    processed: list[dict] = []
+
+    for idx in range(offset, len(all_lines)):
+        raw = all_lines[idx].strip()
+        if not raw:
+            state["consumed_lines"] = idx + 1
+            _save_cursor(cursor_file, state)
+            continue
+
+        req = json.loads(raw)
+        root_hash = req["root_hash"]
+        tree_size = int(req["tree_size"])
+        dev_id = device_id_override or req.get("device_id", "qnx-8.0-adas-node-01")
+        memo_payload = format_memo_payload(dev_id, root_hash, tree_size)
+
+        if dry_run:
+            tx_sig, payer = f"DRY_RUN_TX_{tree_size}", "DRY_RUN_PAYER"
+        else:
+            if not privkey_b58:
+                raise RuntimeError(
+                    "Solana payer private key is required unless --dry-run is set"
+                )
+            tx_sig, payer = broadcaster(memo_payload, rpc_url, privkey_b58)
+
+        receipt = {
+            "line_index": idx,
+            "event": req.get("event", "STH"),
+            "tree_size": tree_size,
+            "root_hash": root_hash,
+            "sth_sha256": req.get("sth_sha256"),
+            "memo": memo_payload,
+            "tx_sig": tx_sig,
+            "payer": payer,
+            "dry_run": dry_run,
+        }
+        processed.append(receipt)
+        state["consumed_lines"] = idx + 1
+        state["anchored"].append(receipt)
+        _save_cursor(cursor_file, state)
+
+    return processed
+
+
 def main():
     parser = argparse.ArgumentParser(description="MD-Confirm RTOS Solana Mainnet Anchoring Engine")
     parser.add_argument("--journal-url", default="http://127.0.0.1:9090/journal",
                         help="QNX HTTP Gateway journal URL (default: http://127.0.0.1:9090/journal)")
+    parser.add_argument("--outbox", default=None,
+                        help="Consume event-triggered anchor requests from anchor_outbox.jsonl")
+    parser.add_argument("--state", default=None,
+                        help="Cursor state file for --outbox (default: <outbox>.cursor.json)")
     parser.add_argument("--rpc", default=DEFAULT_SOLANA_RPC, help="Solana JSON-RPC endpoint")
     parser.add_argument("--privkey", default=DEFAULT_PAYER_KEYPAIR_B58, help="Payer Base58 private key")
-    parser.add_argument("--device-id", default="QNX-ADAS-NODE-01", help="Device identifier")
+    parser.add_argument("--device-id", default=None, help="Device identifier override")
+    parser.add_argument("--dry-run", action="store_true",
+                        help="Build memos and advance cursor without broadcasting to Solana RPC")
     args = parser.parse_args()
 
     print("========================================================================")
@@ -160,6 +264,33 @@ def main():
     print(" Architecture: Off-path async anchoring (QNX kernel is zero-dependency) ")
     print(" Protocol: SPL Memo v1 on Solana Mainnet Ledger                         ")
     print("========================================================================")
+
+    if args.outbox:
+        print(f"[*] Anchor Outbox   : {args.outbox}")
+        try:
+            receipts = consume_outbox(
+                args.outbox,
+                args.rpc,
+                args.privkey,
+                state_path=args.state,
+                device_id_override=args.device_id,
+                dry_run=args.dry_run,
+            )
+        except Exception as exc:
+            print(f"[!] Outbox anchoring failed: {exc}")
+            return 2
+
+        if not receipts:
+            print("[*] No pending anchor requests in outbox.")
+            return 0
+        for rec in receipts:
+            print(
+                f"[+] Anchored tree_size={rec['tree_size']} event={rec['event']} "
+                f"tx={rec['tx_sig']} memo={rec['memo']}"
+            )
+        return 0
+
+    device_id = args.device_id or "QNX-ADAS-NODE-01"
     print(f"[*] Journal Endpoint: {args.journal_url}")
 
     root, seq = fetch_latest_journal_root(args.journal_url)
@@ -167,11 +298,14 @@ def main():
         print("[!] Error: No records found in QNX journal.")
         return 1
 
-    memo_payload = f"MDFP1|{args.device_id}|{root}|{seq}"
+    memo_payload = format_memo_payload(device_id, root, seq)
     print(f"[+] Latest QNX Root : {root}")
     print(f"[+] Frame Sequence  : #{seq}")
     print(f"[+] Anchor Payload  : '{memo_payload}'")
-    print(f"[*] Broadcasting transaction to Solana Mainnet...")
+    if args.dry_run:
+        print("[+] Dry-run mode enabled; skipping RPC broadcast.")
+        return 0
+    print("[*] Broadcasting transaction to Solana Mainnet...")
 
     if not args.privkey:
         print("[!] Error: Solana payer private key is required.")

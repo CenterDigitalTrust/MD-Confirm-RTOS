@@ -32,7 +32,7 @@ $(BIN_DIR)/md-verify: verify/md-verify.cpp common/mdfp_protocol.h common/mdfp_se
 	@mkdir -p $(BIN_DIR)
 	$(CXX) $(CXXFLAGS) -o $@ $<
 
-$(BIN_DIR)/md-seal: seal/md-seal.cpp common/mdfp_protocol.h common/mdfp_seqlock.h common/mdfp_crypto.h common/mdfp_canon.h common/tweetnacl.o
+$(BIN_DIR)/md-seal: seal/md-seal.cpp common/mdfp_protocol.h common/mdfp_seqlock.h common/mdfp_crypto.h common/mdfp_canon.h common/mdfp_merkle.h common/mdfp_seal_core.h common/tweetnacl.o
 	@mkdir -p $(BIN_DIR)
 	$(CXX) $(CXXFLAGS) -o $@ seal/md-seal.cpp common/tweetnacl.o
 

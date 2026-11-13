@@ -44,6 +44,9 @@
 
 // Persistent storage path on QNX6 /data partition (NOT wiped on reboot)
 #define MDFP_PERSISTENT_JOURNAL_PATH "/data/mdfp_evidence/tamper_evident_journal.log"
+#define MDFP_PERSISTENT_STH_PATH     "/data/mdfp_evidence/sth.log"
+#define MDFP_PERSISTENT_OUTBOX_PATH  "/data/mdfp_evidence/anchor_outbox.jsonl"
+#define MDFP_STH_INTERVAL_LEAVES     32
 
 // Pulse codes for asynchronous real-time events
 #define MDFP_PULSE_EOF_IRQ        (_PULSE_CODE_MINAVAIL + 1)

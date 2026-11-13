@@ -21,6 +21,8 @@
 #include "../common/mdfp_protocol.h"
 #include "../common/mdfp_crypto.h"
 #include "../common/mdfp_canon.h"
+#include "../common/mdfp_merkle.h"
+#include "../common/mdfp_seal_core.h"
 
 extern "C" {
 #include "../common/tweetnacl.h"
@@ -46,25 +48,23 @@ static const unsigned char g_device_pub[32] = {
 };
 static unsigned char g_device_sk[64];
 
-static std::vector<std::string> g_leaf_hashes;
-static std::string g_current_root = "0000000000000000000000000000000000000000000000000000000000000000";
-static uint32_t g_leaf_counter = 0;
+static std::string tweetnacl_sign_hex(const std::string& message) {
+    std::vector<unsigned char> signed_buf(message.size() + 64U);
+    unsigned long long signed_len = 0;
+    crypto_sign(
+        signed_buf.data(),
+        &signed_len,
+        reinterpret_cast<const unsigned char*>(message.data()),
+        static_cast<unsigned long long>(message.size()),
+        g_device_sk);
 
-std::string compute_merkle_root() {
-    if (g_leaf_hashes.empty()) return g_current_root;
-    std::vector<std::string> layer = g_leaf_hashes;
-    while (layer.size() > 1) {
-        std::vector<std::string> next_layer;
-        for (size_t i = 0; i < layer.size(); i += 2) {
-            if (i + 1 < layer.size()) {
-                next_layer.push_back(MdfpSha256::node_hash(layer[i], layer[i+1]));
-            } else {
-                next_layer.push_back(MdfpSha256::node_hash(layer[i], layer[i])); // Duplicate odd leaf per RFC 6962
-            }
-        }
-        layer = next_layer;
+    // TweetNaCl places the 64-byte signature at the beginning of signed_buf
+    std::ostringstream sig_hex_stream;
+    sig_hex_stream << std::hex << std::setfill('0');
+    for (int i = 0; i < 64; ++i) {
+        sig_hex_stream << std::setw(2) << static_cast<int>(signed_buf[i]);
     }
-    return layer[0];
+    return sig_hex_stream.str();
 }
 
 int main() {
@@ -82,6 +82,16 @@ int main() {
     mkdir("/data/mdfp_evidence", 0755);
     const std::string journal_path = MDFP_PERSISTENT_JOURNAL_PATH;
 
+    mdfp::SealConfig cfg;
+    cfg.journal_path = journal_path;
+    cfg.sth_path = MDFP_PERSISTENT_STH_PATH;
+    cfg.outbox_path = MDFP_PERSISTENT_OUTBOX_PATH;
+    cfg.device_id = "qnx-8.0-adas-node-01";
+    cfg.key_id = mdfp::key_id_from_pubkey_bytes(g_device_pub);
+    cfg.sth_interval = MDFP_STH_INTERVAL_LEAVES;
+
+    mdfp::SealEngine engine(cfg, tweetnacl_sign_hex);
+
     name_attach_t* attach = name_attach(nullptr, MDFP_ATTACH_SEAL, 0);
     if (!attach) {
         perror("name_attach(mdfp_seal)");
@@ -94,71 +104,34 @@ int main() {
         int rcvid = MsgReceive(attach->chid, &msg, sizeof(msg), nullptr);
         if (rcvid < 0) continue;
 
-        g_leaf_counter++;
+        mdfp::SealInput in;
+        in.hw_eof_ns = msg.hw_eof_ns;
+        in.is_ghost_event = (msg.is_ghost_event != 0);
+        in.frame_seq = msg.frame_seq;
+        in.ncc = msg.ncc;
+        in.pce_db = msg.pce_db;
+        in.pce_linear = msg.pce_linear;
+        in.raw_sha256 = std::string(msg.raw_sha256, strnlen(msg.raw_sha256, sizeof(msg.raw_sha256)));
+        in.scenario = msg.scenario;
+        in.verdict = std::string(msg.verdict, strnlen(msg.verdict, sizeof(msg.verdict)));
 
-        // 1. Format Canonical JSON (RFC 8785) via host-tested serializer
-        std::string canon = mdfp::build_seal_record_json(
-            msg.hw_eof_ns,
-            "qnx-8.0-adas-node-01",
-            msg.is_ghost_event,
-            msg.frame_seq,
-            msg.ncc,
-            msg.pce_db,
-            msg.pce_linear,
-            msg.raw_sha256,
-            msg.scenario,
-            msg.verdict);
+        mdfp::SealOutput sealed = engine.seal_record(in);
 
-        // 2. Compute RFC 6962 Leaf Hash: SHA-256(0x00 || canonical_json)
-        std::string leaf_hash = MdfpSha256::leaf_hash(canon);
-        g_leaf_hashes.push_back(leaf_hash);
-
-        // 3. Recalculate Merkle Tree Root
-        g_current_root = compute_merkle_root();
-
-        // 4. Authentic Ed25519 signature over prefix "MDFP1\n" || Merkle Root using TweetNaCl
-        std::string sign_target = "MDFP1\n" + g_current_root;
-        unsigned char signed_buf[256];
-        unsigned long long signed_len = 0;
-        crypto_sign(signed_buf, &signed_len, (const unsigned char*)sign_target.c_str(), sign_target.length(), g_device_sk);
-
-        // TweetNaCl places the 64-byte signature at the beginning of signed_buf
-        std::ostringstream sig_hex_stream;
-        sig_hex_stream << std::hex << std::setfill('0');
-        for (int i = 0; i < 64; ++i) {
-            sig_hex_stream << std::setw(2) << (int)signed_buf[i];
-        }
-        std::string ed25519_sig = sig_hex_stream.str();
-
-        // 5. Append to Persistent Tamper-Evident Journal on /data partition
-        std::ofstream ofs(journal_path.c_str(), std::ios::app);
-        if (ofs.is_open()) {
-            ofs << "RECORD #" << g_leaf_counter
-                << " | SEQ: " << msg.frame_seq
-                << " | TYPE: " << (msg.is_ghost_event ? "GHOST_EVENT" : "AUTHENTIC")
-                << " | LEAF: " << leaf_hash
-                << " | MERKLE_ROOT: " << g_current_root
-                << " | SIG: " << ed25519_sig
-                << " | RAW_SHA256: " << msg.raw_sha256
-                << " | VERDICT: " << msg.verdict
-                << "\n";
-            ofs.close();
-        }
-
-        std::cout << "[md-seal] Sealed Leaf #" << g_leaf_counter
+        std::cout << "[md-seal] Sealed Leaf #" << sealed.leaf_index
                   << " (Frame #" << msg.frame_seq << ")"
-                  << " | Leaf: " << leaf_hash.substr(0, 16) << "..."
-                  << " | Root: " << g_current_root.substr(0, 16) << "..."
-                  << " | Sig: " << ed25519_sig.substr(0, 16) << "..."
+                  << " | Leaf: " << sealed.leaf_hash.substr(0, 16) << "..."
+                  << " | Root: " << sealed.merkle_root.substr(0, 16) << "..."
+                  << " | Sig: " << sealed.record_sig.substr(0, 16) << "..."
+                  << (sealed.emitted_sth ? " | STH+OUTBOX: YES" : "")
                   << " | Journal: /data/mdfp_evidence" << std::endl;
 
         MdfpSealReply reply;
         std::memset(&reply, 0, sizeof(reply));
-        reply.status = 0;
-        reply.leaf_index = g_leaf_counter;
-        std::strncpy(reply.leaf_sha256, leaf_hash.c_str(), 64);
-        std::strncpy(reply.merkle_root, g_current_root.c_str(), 64);
-        std::strncpy(reply.signature_ed25519, ed25519_sig.c_str(), 128);
+        reply.status = sealed.io_ok ? 0 : -1;
+        reply.leaf_index = sealed.leaf_index;
+        std::strncpy(reply.leaf_sha256, sealed.leaf_hash.c_str(), 64);
+        std::strncpy(reply.merkle_root, sealed.merkle_root.c_str(), 64);
+        std::strncpy(reply.signature_ed25519, sealed.record_sig.c_str(), 128);
         std::strncpy(reply.journal_path, journal_path.c_str(), 127);
 
         MsgReply(rcvid, 0, &reply, sizeof(reply));
