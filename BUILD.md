@@ -34,13 +34,13 @@ make all
 ```
 
 The build produces 7 native ELF binaries in `bin/`:
-1. `md-sensor-sim` : Synthetic RAW Bayer sensor feeder with PRNU wafer noise simulation
-2. `md-capture`    : High-priority `SCHED_FIFO 21` frame receiver with `ClockCycles()` timestamping (zero network code)
-3. `md-verify`     : PCE / NCC correlation engine running in `SCHED_FIFO 15`
-4. `md-seal`       : RFC 6962 Merkle tree & RFC 8032 Ed25519 software signer (`FileSigner` / TweetNaCl, strict `0600` key check, no hardware key protection; `SCHED_FIFO 12`)
-5. `md-watchdog`   : Asynchronous pulse timeout watchdog detecting cable cuts (`SCHED_FIFO 22`)
-6. `md-ctl`        : QNX Native Resource Manager for `/dev/mdconfirm` (`SCHED_RR 10`)
-7. `md-telemetry`  : Low-priority read-only telemetry HTTP gateway on port 9090 (`SCHED_RR 8`)
+1. `md-sensor-sim` : Synthetic RAW Bayer sensor feeder with wafer PRNU noise simulation (plus optional `--extra-signals` `HMAC` gain modulation)
+2. `md-capture`    : High-priority `SCHED_FIFO 21` (explicit `sched_setscheduler`) single-copy frame receiver with `frame_sha256` & `ClockCycles()` (zero network code)
+3. `md-verify`     : PCE / NCC correlation & optional `--extra-signals` engine (`Target PRIO 15` constant in `mdfp_protocol.h`)
+4. `md-seal`       : RFC 6962 Merkle tree, chained STHs & RFC 8032 Ed25519 software signer (`FileSigner` / TweetNaCl, strict `0600` key check, no hardware key protection; `Target PRIO 12` constant)
+5. `md-watchdog`   : Asynchronous pulse timeout watchdog detecting cable cuts (`Target PRIO 22` constant)
+6. `md-ctl`        : QNX Native Resource Manager for `/dev/mdconfirm` (`Target PRIO 10` constant)
+7. `md-telemetry`  : Low-priority `SCHED_RR 8` (explicit `sched_setscheduler`) read-only HTTP gateway on `127.0.0.1:9090` by default
 
 ---
 
@@ -81,19 +81,19 @@ qemu-system-x86_64 -m 2048 -smp 2 \
 
 ### Automated Suite:
 ```bash
-# Run all 6 attack scenarios in sequence:
+# Run Phase 1 (PRNU default: 1, 2, 3, 5) + Phase 2 (--extra-signals: 1, 4, 7, 8) + host CAN demo:
 ./run_all_scenarios.sh
 ```
 
 ### Manual Service Execution:
-Start the isolated daemons in background:
+Start the isolated daemons in background (bind `127.0.0.1:9090` by default; add `--extra-signals` to `md-verify` & `md-sensor-sim` for Phase 2):
 ```bash
 ./bin/md-seal &
 ./bin/md-verify &
 ./bin/md-watchdog &
 ./bin/md-capture &
 ./bin/md-ctl &
-./bin/md-telemetry --bind 0.0.0.0:9090 --journal /data/mdfp_evidence/tamper_evident_journal.log &
+./bin/md-telemetry --bind 127.0.0.1:9090 --journal /data/mdfp_evidence/tamper_evident_journal.log &
 ```
 
 Trigger individual scenarios using the sensor simulator:
@@ -101,14 +101,19 @@ Trigger individual scenarios using the sensor simulator:
 # Scenario 1: Calibrated Physical CMOS Sensor (Expected: ALLOW & SEAL)
 ./bin/md-sensor-sim 1 50
 
-# Scenario 2: Foreign Silicon Sensor Swap Attack (Expected: BLOCK)
+# Scenario 2: Foreign Silicon Sensor Swap Attack (Expected: BLOCK_FOREIGN_SENSOR)
 ./bin/md-sensor-sim 2 20
 
-# Scenario 3: Generative AI Deepfake Injection (Expected: BLOCK)
+# Scenario 3: Generative AI Deepfake Injection (Expected: BLOCK_SYNTHETIC_NO_PRNU)
 ./bin/md-sensor-sim 3 20
 
-# Scenario 5: Physical MIPI Bus Disconnect / Cut (Expected: WATCHDOG ALARM)
+# Scenario 5: Physical MIPI Bus Disconnect / Cut (Expected: WATCHDOG GHOST_EVENT)
 ./bin/md-sensor-sim 5 10
+
+# Phase 2 (--extra-signals enabled on md-verify & md-sensor-sim):
+# Scenario 4: K_REF Spoof without HMAC modulation (BLOCK_CHALLENGE_MODULATION)
+# Scenario 7: Frame Replay Attack (BLOCK_SEQ_REPLAY)
+# Scenario 8: Seq Gap / Timing Out-of-Bounds (BLOCK_SEQ_GAP / BLOCK_TIMING_OUT_OF_BOUNDS)
 ```
 
 ---

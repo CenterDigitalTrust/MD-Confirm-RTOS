@@ -191,7 +191,9 @@ def compute_roc_and_metrics(
     fprs = np.asarray([pt[0] for pt in roc], dtype=np.float64)
     tprs = np.asarray([pt[1] for pt in roc], dtype=np.float64)
     order = np.argsort(fprs)
-    trap_fn = getattr(np, "trapezoid", None) or getattr(np, "trapz")
+    trap_fn = getattr(np, "trapezoid", None) or getattr(np, "trapz", None)
+    if trap_fn is None:
+        raise AttributeError("Neither numpy.trapezoid nor numpy.trapz is available")
     auc = float(trap_fn(tprs[order], fprs[order]))
 
     return roc, {
