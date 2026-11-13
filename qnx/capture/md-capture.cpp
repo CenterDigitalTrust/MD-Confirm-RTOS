@@ -7,6 +7,7 @@
 
 #include <iostream>
 #include <iomanip>
+#include <memory>
 #include <cstring>
 #include <cstdlib>
 #include <unistd.h>
@@ -90,6 +91,8 @@ int main() {
 
     uint64_t prev_eof_ns = 0;
     uint64_t cycles_per_sec = mdfp_cycles_per_sec();
+    auto snapshot = std::make_unique<mdfp::ingest::PrivateFrameSnapshot>();
+    auto verify_msg = std::make_unique<MdfpVerifyMsg>();
 
     while (true) {
         struct _pulse pulse;
@@ -109,13 +112,48 @@ int main() {
                     }
                 }
 
-                uint64_t hw_eof_cycles = shm ? shm->hw_eof_cycles : capture_wakeup_cycles;
-                uint64_t hw_eof_ns = shm ? shm->hw_eof_ns : capture_wakeup_ns;
-                uint32_t scenario = shm ? shm->scenario : 1;
+                // TRUST BOUNDARY: copy frame out of shared memory into a process-private
+                // buffer FIRST and compute SHA-256 over that private copy. Never re-read shm.
+                if (shm && shm != MAP_FAILED) {
+                    const volatile MdfpSharedMemory* vshm = shm;
+                    mdfp::ingest::capture_copy_from_shm_and_hash(
+                        vshm->magic,
+                        seq,
+                        vshm->scenario,
+                        vshm->hw_eof_cycles,
+                        vshm->hw_eof_ns,
+                        vshm->width,
+                        vshm->height,
+                        vshm->payload_bytes ? vshm->payload_bytes : MDFP_RAW_BYTES,
+                        vshm->bayer_raw,
+                        capture_wakeup_cycles,
+                        capture_wakeup_ns,
+                        MDFP_DEFAULT_SENSOR_ID,
+                        snapshot.get());
+                } else {
+                    mdfp::ingest::capture_copy_from_shm_and_hash(
+                        MDFP_MAGIC,
+                        seq,
+                        1U,
+                        capture_wakeup_cycles,
+                        capture_wakeup_ns,
+                        MDFP_SENSOR_WIDTH,
+                        MDFP_SENSOR_HEIGHT,
+                        0U,
+                        nullptr,
+                        capture_wakeup_cycles,
+                        capture_wakeup_ns,
+                        MDFP_DEFAULT_SENSOR_ID,
+                        snapshot.get());
+                }
+
+                uint64_t hw_eof_cycles = snapshot->hw_eof_cycles;
+                uint64_t hw_eof_ns = snapshot->hw_eof_ns;
+                uint32_t scenario = snapshot->scenario;
 
                 // Latency (b): EOF IRQ to md-capture wakeup
-                uint64_t latency_b_ns = (capture_wakeup_cycles > hw_eof_cycles) 
-                    ? ((capture_wakeup_cycles - hw_eof_cycles) * 1000000000ULL / cycles_per_sec) 
+                uint64_t latency_b_ns = (capture_wakeup_cycles > hw_eof_cycles)
+                    ? ((capture_wakeup_cycles - hw_eof_cycles) * 1000000000ULL / cycles_per_sec)
                     : 15000ULL;
                 double latency_b_us = double(latency_b_ns) / 1000.0;
 
@@ -133,27 +171,30 @@ int main() {
                     MsgSendPulse(watchdog_coid, 10, MDFP_PULSE_WATCHDOG_HEART, seq);
                 }
 
-                // Forward to md-verify via synchronous MsgSend()
+                // Forward private snapshot + SHA-256 + seq + capture cycle count via MsgSend()
                 if (verify_coid >= 0) {
-                    MdfpVerifyMsg msg;
-                    msg.type = 0x0100;
-                    msg.subtype = 0x0001;
-                    msg.frame_seq = seq;
-                    msg.scenario = scenario;
-                    msg.hw_eof_cycles = hw_eof_cycles;
-                    msg.hw_eof_ns = hw_eof_ns;
-                    msg.capture_wakeup_cycles = capture_wakeup_cycles;
-                    msg.capture_wakeup_ns = capture_wakeup_ns;
-                    msg.shm_offset = 0;
+                    std::memset(verify_msg.get(), 0, sizeof(*verify_msg));
+                    verify_msg->type = 0x0100;
+                    verify_msg->subtype = 0x0001;
+                    verify_msg->frame_seq = seq;
+                    verify_msg->scenario = scenario;
+                    verify_msg->hw_eof_cycles = hw_eof_cycles;
+                    verify_msg->hw_eof_ns = hw_eof_ns;
+                    verify_msg->capture_wakeup_cycles = capture_wakeup_cycles;
+                    verify_msg->capture_wakeup_ns = capture_wakeup_ns;
+                    verify_msg->width = snapshot->width;
+                    verify_msg->height = snapshot->height;
+                    verify_msg->payload_bytes = snapshot->payload_bytes;
+                    mdfp::ingest::copy_cstr_bounded(
+                        verify_msg->sensor_id, sizeof(verify_msg->sensor_id), snapshot->sensor_id);
+                    mdfp::ingest::copy_cstr_bounded(
+                        verify_msg->frame_sha256, sizeof(verify_msg->frame_sha256), snapshot->frame_sha256);
+                    std::memcpy(verify_msg->bayer_raw, snapshot->bayer_raw, MDFP_RAW_BYTES);
 
                     MdfpVerifyReply reply;
-                    int status = MsgSend(verify_coid, &msg, sizeof(msg), &reply, sizeof(reply));
+                    int status = MsgSend(verify_coid, verify_msg.get(), sizeof(*verify_msg), &reply, sizeof(reply));
                     if (status >= 0) {
-                        std::string frame_hash = "0000000000000000000000000000000000000000000000000000000000000000";
-                        if (shm) {
-                            frame_hash = MdfpSha256::hash_hex((const uint8_t*)shm->bayer_raw, MDFP_RAW_BYTES);
-                        }
-
+                        // Reuse the exact private-copy SHA-256 (zero second SHM read).
                         // Atomic Seqlock Update for Lock-Free Reader md-telemetry
                         local_stats.last_frame_seq = seq;
                         local_stats.last_scenario = scenario;
@@ -163,10 +204,10 @@ int main() {
                         local_stats.last_latency_b_us = latency_b_us;
                         local_stats.last_jitter_us = jitter_us;
                         local_stats.last_cycles_delta = (capture_wakeup_cycles > hw_eof_cycles) ? (capture_wakeup_cycles - hw_eof_cycles) : 0;
-                        std::memset(local_stats.last_verdict, 0, sizeof(local_stats.last_verdict));
-                        std::strncpy(local_stats.last_verdict, reply.verdict, sizeof(local_stats.last_verdict) - 1);
-                        std::memset(local_stats.last_frame_sha256, 0, sizeof(local_stats.last_frame_sha256));
-                        std::strncpy(local_stats.last_frame_sha256, frame_hash.c_str(), sizeof(local_stats.last_frame_sha256) - 1);
+                        mdfp::ingest::copy_cstr_bounded(
+                            local_stats.last_verdict, sizeof(local_stats.last_verdict), reply.verdict);
+                        mdfp::ingest::copy_cstr_bounded(
+                            local_stats.last_frame_sha256, sizeof(local_stats.last_frame_sha256), snapshot->frame_sha256);
                         if (reply.status == 0) local_stats.total_frames++;
                         else local_stats.total_blocked++;
 

@@ -42,22 +42,19 @@
 #define MDFP_STATS_SHM_NAME     "/mdfp_stats_shm"
 #define MDFP_TELEMETRY_SHM_NAME "/mdfp_stats_shm" // Alias for compatibility
 
+#include "mdfp_ingest.h"
+
 // Persistent storage path on QNX6 /data partition (NOT wiped on reboot)
 #define MDFP_PERSISTENT_JOURNAL_PATH "/data/mdfp_evidence/tamper_evident_journal.log"
 #define MDFP_PERSISTENT_STH_PATH     "/data/mdfp_evidence/sth.log"
 #define MDFP_PERSISTENT_OUTBOX_PATH  "/data/mdfp_evidence/anchor_outbox.jsonl"
+#define MDFP_DEFAULT_KEY_FILE_PATH   "/data/mdfp_evidence/device_ed25519.key"
 #define MDFP_STH_INTERVAL_LEAVES     32
 
 // Pulse codes for asynchronous real-time events
 #define MDFP_PULSE_EOF_IRQ        (_PULSE_CODE_MINAVAIL + 1)
 #define MDFP_PULSE_WATCHDOG_HEART (_PULSE_CODE_MINAVAIL + 2)
 #define MDFP_PULSE_WATCHDOG_TICK  (_PULSE_CODE_MINAVAIL + 3)
-
-// Simulated Sensor Resolution (64x64 silicon wafer PRNU crop)
-#define MDFP_SENSOR_WIDTH  64
-#define MDFP_SENSOR_HEIGHT 64
-#define MDFP_PRNU_SIZE     (MDFP_SENSOR_WIDTH * MDFP_SENSOR_HEIGHT) // 4096 pixels
-#define MDFP_RAW_BYTES     (MDFP_PRNU_SIZE * 2)                     // 16-bit Bayer: 8192 bytes
 
 // Nominal Frame Rate & Timing Budget
 #define MDFP_NOMINAL_FPS          30.0
@@ -95,6 +92,8 @@ struct MdfpSharedMemory {
 };
 
 // Message from md-capture -> md-verify via MsgSend()
+// Carries the private Bayer copy + SHA-256 computed over that copy by md-capture
+// so md-verify never re-reads /mdfp_frame_shm (eliminates post-hash SHM TOCTOU).
 struct MdfpVerifyMsg {
     uint16_t type;    // 0x0100
     uint16_t subtype;
@@ -104,16 +103,25 @@ struct MdfpVerifyMsg {
     uint64_t hw_eof_ns;
     uint64_t capture_wakeup_cycles;
     uint64_t capture_wakeup_ns;
-    uint32_t shm_offset;
+    uint32_t width;
+    uint32_t height;
+    uint32_t payload_bytes;
+    char sensor_id[32];
+    char frame_sha256[65];
+    uint16_t bayer_raw[MDFP_PRNU_SIZE];
 };
 
 struct MdfpVerifyReply {
-    uint32_t status; // 0 = VERIFIED, 1 = REJECTED_SILICON, 2 = REJECTED_TIMING
+    uint32_t status; // 0 = VERIFIED, 1 = REJECTED_SILICON, 2 = REJECTED_TIMING, 3 = INGEST_HASH_MISMATCH
     char verdict[48];
     double ncc;
     double pce_linear; // Dimensionless PCE ratio
     double pce_db;     // Decibel scale: 10 * log10(pce_linear)
+    double ncc_threshold;
+    double pce_threshold_linear;
     double pce_threshold_db;
+    char k_ref_id[32];
+    char k_ref_version[16];
     uint64_t verify_start_cycles;
     uint64_t verify_end_cycles;
     uint64_t verify_duration_ns;
@@ -126,10 +134,16 @@ struct MdfpSealMsg {
     uint32_t frame_seq;
     uint32_t scenario;
     uint64_t hw_eof_ns;
+    uint64_t capture_cycles;
     double ncc;
     double pce_linear;
     double pce_db;
+    double ncc_threshold;
+    double pce_threshold_linear;
     char raw_sha256[65];
+    char sensor_id[32];
+    char k_ref_id[32];
+    char k_ref_version[16];
     uint64_t inter_frame_ns;
     int64_t inter_frame_jitter_ns;
     uint64_t eof_to_capture_ns;

@@ -22,17 +22,17 @@ cd qnx && make all && cd ..
 python3 host/verify-cli/md_verify_cli.py --source /data/mdfp_evidence/tamper_evident_journal.log --solana-tx 4N4vyHbz3wvMnR6736uePmRPtNdr6Fo6ujk62h1cPhF9tdoUUAicZX7oGwZD4AdRLdkKMC8nD1eEn7Kgb46SPiZW
 ```
 
-> **Known Limitations & Verification Boundaries:** See [`docs/LIMITATIONS.md`](docs/LIMITATIONS.md) for the consolidated engineering limitations list, simulation vs. measurement labels, and host-only CI policy (QNX targets require proprietary QNX SDP 8.0 and are not built in CI).  
+> **Trust Boundary, Known Limitations & Verification Scope:** See [`docs/TRUST_BOUNDARY.md`](docs/TRUST_BOUNDARY.md) (what is inside vs. outside the boundary, who can forge shm frames, and what Ed25519 signatures prove) and [`docs/LIMITATIONS.md`](docs/LIMITATIONS.md) (simulation vs. measurement labels and host-only CI policy).  
 > **Direct Evidence Logs & Artifacts:** Full execution outputs (`uname -a`, `pidin`, scenario runs, and before/after telemetry jitter histograms) are available in [`docs/evidence/`](docs/evidence/).
 
 ---
 
 ## 1. Project Overview
 
-**MD-Confirm RTOS** is a modular microkernel security framework built for **BlackBerry QNX Neutrino RTOS 8.0**. When a RAW frame is ingested, the system checks its sensor fingerprint (PRNU), records timing via `ClockCycles()`, signs Merkle commitments with Ed25519 over canonical JSON event metadata, and optionally anchors the Merkle root to Solana.
+**MD-Confirm RTOS** is a modular microkernel security framework built for **BlackBerry QNX Neutrino RTOS 8.0**. When a RAW frame is ingested, the system copies it once from shared memory into a private buffer (`PrivateFrameSnapshot`), hashes it over that private copy (`frame_sha256`), checks its sensor fingerprint (PRNU) statistically, records timing via `ClockCycles()`, signs Merkle commitments with Ed25519 over canonical JSON event metadata, and optionally anchors the Merkle root to Solana.
 
-* **What we prove (`SIMULATED` / Software Demo):** The frame statistically matches a reference sensor pattern (PRNU), and sealed journal entries carry verifiable Ed25519 signatures over Merkle roots. In this demo frames are synthetic and arrive via shared memory; there is no real DMA or MIPI CSI-2 hardware (see [`docs/LIMITATIONS.md`](docs/LIMITATIONS.md) for current TOCTOU and tree-verification limits).
-* **What we do NOT prove:** That the physical scene in front of the lens is authentic (e.g., pointing a physical camera at a display screen is outside the cryptographic perimeter).
+* **What we prove (`SIMULATED` / Software Demo):** The Ed25519 signature proves **"this node (`md-seal`) accepted these bytes (`frame_sha256` + canonical metadata) at this time"**, and pixel attribution statistically matches a reference sensor pattern (PRNU). In this demo frames are synthetic and arrive via `/mdfp_frame_shm`; there is no real DMA or MIPI CSI-2 hardware (see [`docs/TRUST_BOUNDARY.md`](docs/TRUST_BOUNDARY.md) and [`docs/LIMITATIONS.md`](docs/LIMITATIONS.md)).
+* **What we do NOT prove:** That `/mdfp_frame_shm` writers are uncompromised before `md-capture` copies a frame (whoever can write `/mdfp_frame_shm` can forge frames), hardware-protected private keys (software `FileSigner` only), or that the physical scene in front of the lens is authentic.
 
 ---
 
@@ -43,20 +43,20 @@ In mission-critical embedded systems and forensic computing, acknowledging threa
 * **Sensor-to-Memory Scope:** The system checks whether a frame statistically matches a reference PRNU pattern and records cryptographic journal commitments. It does **not** authenticate physical scene reality (e.g. optical playback or projectors in front of the lens require active depth sensing).
 * **Simulation in QEMU x86_64 (`SIMULATED`):** All QNX test scenarios and pipeline benchmarks are demonstrated on **SYNTHETIC frames** inside QEMU x86_64 running QNX SDP 8.0. Virtualized latency and jitter measurements do not substitute for bare-metal hardware validation (`NOT YET MEASURED`).
 * **Scenario 4 (Synthetic Injection with Pre-applied Noise — `ROADMAP`):** Frame-rhythm / jitter blocking for frames carrying pre-applied $K_{\text{REF}}$ noise is not yet enforced in `md-verify` (`allow = true` currently logs the scenario as flagged; real camera timing ROC is `NOT YET MEASURED`).
-* **Key Protection Model:** On this hackathon evaluation bench, the Ed25519 signing seed (`md-seal.cpp`) and synthetic reference pattern $K_{\text{REF}}$ are embedded in source code for deterministic demo reproducibility (no HSM/TPM). Production deployment requires hardware Secure Boot and a dedicated HSM or TPM 2.0.
+* **Key Protection Model (No Hardware Key Protection):** `md-seal` uses [`qnx/common/mdfp_signer.h`](qnx/common/mdfp_signer.h) (`FileSigner` software TweetNaCl key stored on filesystem; refuses group- or world-readable key files where POSIX `mode & 0077 != 0`, auto-provisioning the demo key at `0600` when the default path does not yet exist). **There is no hardware key protection today** (`HardwareTokenSignerStub` for PKCS#11 / TPM 2.0 / Secure Element is an unimplemented `ROADMAP` stub, and `swtpm` is strictly software emulation). See [`docs/TRUST_BOUNDARY.md`](docs/TRUST_BOUNDARY.md).
 * **Journal Property:** The forensic evidence journal is **tamper-evident**, not physically immutable WORM media; physical write-protection relies on the underlying storage controller. **Modification, rollback, and tail-truncation detection hold strictly relative to an external checkpoint** (`--checkpoint STH_FILE`, `--solana-tx`, or `--tsa-tsr` + `--tsa-ca`; without one, tail truncation or full-log rollback cannot be detected). See [`docs/LIMITATIONS.md`](docs/LIMITATIONS.md) for current boundaries.
 
 | # | Threat Scenario | Current Status | Technical Mechanism & Rationale |
 |---|-----------------|----------------|----------------------------------|
 | 1 | Frame from another physical camera (Silicon swap) | **YES** (`SIMULATED`) | Low Peak-to-Correlation Energy ($\text{PCE} < 60.0$ linear / $< 17.78\text{ dB}$) relative to synthetic $K_{\text{REF}}$ |
 | 2 | Synthetic AI deepfake (no silicon noise) | **YES** (`SIMULATED`) | Flat synthetic frame yields negligible PRNU correlation ($\text{PCE} \ll 17.78\text{ dB}$, $\text{NCC} \approx 0.01$) |
-| 3 | Frame alteration after ingestion | **ROADMAP** | Cryptographic hash in Merkle leaf (single-slot SHM snapshot race & leaf preimage persistence on roadmap) |
+| 3 | Frame alteration after ingestion copy | **YES (IPC boundary)** (`mdfp_ingest.h` host-tested; QNX `UNTESTED ON QNX`) | `md-capture` copies `/mdfp_frame_shm` once into `PrivateFrameSnapshot` and hashes before IPC; `md-verify` makes zero SHM reads and re-checks `SHA-256 == frame_sha256` (`BLOCK_INGEST_HASH_MISMATCH`). Note: writes to `/mdfp_frame_shm` *before* copy remain outside the boundary ([`docs/TRUST_BOUNDARY.md`](docs/TRUST_BOUNDARY.md)) |
 | 4 | Synthetic frame with pre-applied $K_{\text{REF}}$ noise (fingerprint-copy attack) | **ROADMAP** | PRNU matches by construction; real-dataset copy-attack minimum $N_{\text{attack}}$ (`NOT YET MEASURED` — harness in [`host/prnu-eval/`](host/prnu-eval/) & [`docs/PRNU_RESULTS.md`](docs/PRNU_RESULTS.md)) and automated interval-jitter blocking (`ROADMAP`) |
 | 5 | Optical playback in front of lens (screen attack) | **BOUNDARY** | Outside silicon sensor perimeter (requires active optical depth sensing) |
 | 6 | Hardware bus emulator on FPGA with precise rhythm | **BOUNDARY** | Physical CSI-2 bus timing can be mimicked by custom FPGA hardware |
 | 7 | MIPI cable severed or camera power loss | **YES** (`SIMULATED`) | `md-watchdog`: Asynchronous QNX pulse timeout ($> 50\text{ ms}$) trips emergency `GHOST_EVENT` |
 | 8 | Tampering with stored records after capture | **YES relative to external checkpoint** (`SIMULATED` / host-tested) | Detects modified metadata (`CANON` + `LEAF`), duplicated leaves, reordered/swapped records, invalid Ed25519 signatures, broken `prev_sth_sha256` STH chains, and rollback/tail truncation **relative to an external checkpoint** (trusted STH file, Solana memo, or RFC 3161 TSA) via strict RFC 6962 inclusion & consistency proofs. Without an external checkpoint, tail truncation is not detectable (`WARNING` emitted) |
-| 9 | Root exploit on node / private key extraction | **BOUNDARY** | Requires hardware TPM 2.0 / Secure Enclave & Secure Boot (`ROADMAP`) |
+| 9 | Root exploit on node / private key extraction | **BOUNDARY** | `FileSigner` uses filesystem keys with no hardware key protection (`swtpm` is emulation only; PKCS#11 / hardware TPM 2.0 / Secure Element = `ROADMAP`) |
 
 ---
 
@@ -147,11 +147,11 @@ flowchart TD
 
 Full details live in **[`docs/LIMITATIONS.md`](docs/LIMITATIONS.md)**. Key constraints include:
 
-1. **Synthetic Frames:** `md-sensor-sim` generates synthetic frames in shared memory (`/mdfp_frame_shm`); there is no real DMA or MIPI CSI-2 sensor hardware.
+1. **Synthetic Frames:** `md-sensor-sim` generates synthetic frames in shared memory (`/mdfp_frame_shm`, mode `0666`); whoever can write `/mdfp_frame_shm` can forge frames ([`docs/TRUST_BOUNDARY.md`](docs/TRUST_BOUNDARY.md)). There is no real DMA or MIPI CSI-2 sensor hardware.
 2. **QEMU Virtualization:** All QNX timing logs (`docs/evidence/`) were collected inside QEMU x86_64 virtualization; bare-metal determinism is `NOT YET MEASURED`.
-3. **Demo Source-Embedded Key Seed:** Device Ed25519 signing seed (`g_device_seed`) and synthetic $K_{\text{REF}}$ are embedded in source code for evaluation; production deployment requires a hardware TPM 2.0 / HSM (`ROADMAP`).
-4. **Synchronous Pipeline & SHM TOCTOU:** `md-capture` → `md-verify` → `md-seal` currently blocks synchronously per frame, and `/mdfp_frame_shm` is not yet double-buffered/snapshotted (`ROADMAP`).
-5. **Persistent `/data` Partition & Restart Reload:** Journal persistence requires mounting `/data`; reloading prior journal entries into `md-seal` on restart/reboot is not yet implemented (`ROADMAP`).
+3. **Software Key Files (No Hardware Key Protection):** `md-seal` uses [`qnx/common/mdfp_signer.h`](qnx/common/mdfp_signer.h) (`FileSigner` with strict POSIX `0600` key permission checks; no hardware key protection; [`HardwareTokenSignerStub`](qnx/common/mdfp_signer.h) is unimplemented `ROADMAP`, and `swtpm` is strictly software emulation). `K_REF` remains deterministically simulated in code.
+4. **Synchronous Pipeline & Ingestion Boundary:** `md-capture` → `md-verify` → `md-seal` runs synchronous `MsgSend()` calls, while `md-capture` now takes a single-pass `PrivateFrameSnapshot` + `frame_sha256` before IPC and `md-verify` never re-reads SHM (`mdfp_ingest.h` host-tested; QNX IPC `UNTESTED ON QNX`).
+5. **Persistent `/data` Partition & Restart Reload:** Journal persistence requires mounting `/data`; `SealEngine` reloads prior journal & `sth.log` state on restart (host-tested in `mdfp_seal_core.h`; QNX binary `UNTESTED ON QNX`).
 6. **Local Telemetry Port:** `md-telemetry` binds `127.0.0.1:9090` by default (override with `--bind <ipv4:port>`) with unauthenticated HTTP access intended for localhost/tunneling only.
 
 ---
@@ -174,11 +174,12 @@ Full details live in **[`docs/LIMITATIONS.md`](docs/LIMITATIONS.md)**. Key const
 ## 8. Independent Verifier & Verifiable Append-Only Log (software, TweetNaCl)
 
 1. **Trust Basis (Relative to External Checkpoint):** Modification, rollback, and tail-truncation detection hold **strictly relative to an external checkpoint** (`--checkpoint STH_FILE`, `--solana-tx`, or `--tsa-tsr` + `--tsa-ca`). The verifier always prints its trust basis (`truncation/rollback detection is relative to checkpoint X (source: file | solana | tsa | none)`). Without an external checkpoint (`source: none`), the node-supplied log is trusted for head freshness and the verifier prints `WARNING: tail truncation NOT detectable.`
-2. **Pinned Device Public Key:** Journal records and Signed Tree Heads (STHs) carry RFC 8032 Ed25519 signatures generated with TweetNaCl:
-   * Device Public Key: `7ea81ac6c1fc3a9a567a7693e3d930a5c140a3a05fa270d763f291160696a468`
-3. **Strict RFC 6962 Trees, Chained STHs, & Event-Triggered Anchoring:**
+2. **Identity Anchoring, Demo PKI & Key Rotation (`DEMO ONLY`):** Journal records and Signed Tree Heads (STHs) carry RFC 8032 Ed25519 signatures generated with TweetNaCl:
+   * Default Pinned Device Public Key: `7ea81ac6c1fc3a9a567a7693e3d930a5c140a3a05fa270d763f291160696a468`
+   * **Demo CA / Certificates / Rotation / Revocation ([`host/pki/md_demo_pki.py`](host/pki/md_demo_pki.py)):** Explicitly labeled **`DEMO ONLY — NOT FOR PRODUCTION USE`** (software keys on disk, no HSM/TPM). Creates an offline CA key, issues signed JSON device certificates (`device_id`, `public_key`, `not_before`, `not_after`, `key_id`), issues key-rotation records (certified by `old_key` or `ca`), and maintains revocation lists verified via `md_verify_cli.py --ca-pub ... --device-cert ... --revoked ... --rotation ...`.
+3. **Strict RFC 6962 Trees, Chained STHs, & Extended Leaf Provenance:**
    * [`host/verify-cli/merkle_rfc6962.py`](host/verify-cli/merkle_rfc6962.py) and [`qnx/common/mdfp_merkle.h`](qnx/common/mdfp_merkle.h) implement strict RFC 6962 §§2.1, 2.1.1, and 2.1.2 (`merkle_tree_hash`, `inclusion_proof`, `verify_inclusion`, `consistency_proof`, `verify_consistency`) without odd-leaf duplication.
-   * [`qnx/common/mdfp_seal_core.h`](qnx/common/mdfp_seal_core.h) (`SealEngine`, wrapped by [`qnx/seal/md-seal.cpp`](qnx/seal/md-seal.cpp), `UNTESTED ON QNX` binary) appends `| CANON: <rfc8785_json>` to journal entries, reloads prior journal/`sth.log` state on restart, emits chained RFC 8785 STHs (`{version, device_id, tree_size, root_hash, timestamp, prev_sth_sha256, key_id}` + Ed25519 signature) to `sth.log` every 32 leaves and on every `GHOST_EVENT`, and writes event-triggered anchor requests to `anchor_outbox.jsonl` with zero network code on QNX.
+   * [`qnx/common/mdfp_seal_core.h`](qnx/common/mdfp_seal_core.h) (`SealEngine`, wrapped by [`qnx/seal/md-seal.cpp`](qnx/seal/md-seal.cpp), `UNTESTED ON QNX` binary) appends `| CANON: <rfc8785_json>` carrying `frame_sha256`, `seq`, `clock_cycles`, `sensor_id`, `k_ref_id`, `k_ref_version`, thresholds (`ncc_threshold`, `pce_threshold_linear`), `ncc`, `pce_linear`, `pce_db`, and `verdict`, reloads prior journal/`sth.log` state on restart, emits chained RFC 8785 STHs (`{version, device_id, tree_size, root_hash, timestamp, prev_sth_sha256, key_id}` + Ed25519 signature) to `sth.log` every 32 leaves and on every `GHOST_EVENT`, and writes event-triggered anchor requests to `anchor_outbox.jsonl` with zero network code on QNX.
    * [`host/anchor/md_anchor.py`](host/anchor/md_anchor.py) supports `--outbox <path>` (plus `--dry-run`) to consume pending `(root, tree_size)` requests with a sidecar cursor. Optional host script [`host/tsa/md_tsa.py`](host/tsa/md_tsa.py) requests an RFC 3161 `.tsr` timestamp for `sha256(STH)` from any configurable `--tsa-url` (none hardcoded), verified by `md_verify_cli.py --tsa-tsr ... --tsa-ca ...` via `openssl ts -verify`.
 4. **Factual CLI Output:**
    `root and signature verified [PASS]` (with `WARNING: tail truncation NOT detectable.` when `source: none`) or `root, signature, and checkpoint/anchor verified [PASS]`.
@@ -205,7 +206,7 @@ python3 host/verify-cli/md_verify_cli.py --source http://127.0.0.1:9090/api/jour
 
 ## 10. Continuous Integration & What We Do NOT Claim
 
-* **Host CI Scope ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)):** GitHub Actions tests host Python (`pytest`, `ruff`) and portable C++ units in `qnx/common/` (RFC 8032 Ed25519 KATs on TweetNaCl, RFC 8785 JCS KATs, HTTP request parser + `libFuzzer`, and multi-threaded `mdfp_seqlock.h` with `-fsanitize=thread`, `-Wall -Wextra`). **QNX binaries are NOT compiled in CI** due to proprietary BlackBerry QNX SDP 8.0 headers/toolchain licensing; changes under `qnx/*` remain `UNTESTED ON QNX` unless built on a QNX SDP 8.0 host.
+* **Host CI Scope ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)):** GitHub Actions tests host Python (`pytest`, `ruff`) and portable C++ units in `qnx/common/` (RFC 8032 Ed25519 KATs on TweetNaCl, RFC 8785 JCS KATs, HTTP request parser + `libFuzzer`, `mdfp_ingest.h`, `mdfp_signer.h`, `mdfp_seal_core.h`, and multi-threaded `mdfp_seqlock.h` with `-fsanitize=thread`, `-Wall -Wextra -Werror`). **QNX binaries are NOT compiled in CI** due to proprietary BlackBerry QNX SDP 8.0 headers/toolchain licensing; changes under `qnx/*` remain `UNTESTED ON QNX` unless built on a QNX SDP 8.0 host.
 * We do **NOT** claim ASIL-D or SIL 3 certification. ASIL-D certification applies to commercial QNX OS for Safety products.
-* We do **NOT** claim "100% unbreakable security" or hardware cryptographic key protection on the demonstration VM (`ROADMAP`).
+* We do **NOT** claim "100% unbreakable security" or hardware cryptographic key protection on the demonstration VM (`FileSigner` software keys only; `HardwareTokenSignerStub` is an unimplemented `ROADMAP` stub; any `swtpm` lab usage is software emulation only).
 * The forensic journal is **tamper-evident**, not immutable WORM hardware.

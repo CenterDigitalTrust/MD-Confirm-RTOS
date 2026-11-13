@@ -120,6 +120,46 @@ void test_seal_record_serializer() {
         "\"scenario\":1,"
         "\"verdict\":\"OK\\\"WITH\\\\QUOTE\\nAND\\tTAB\"}";
     assert(json == expected);
+
+    // Full Task 5 Trust-Boundary leaf schema including ClockCycles, sensor_id,
+    // K_REF id/version, thresholds, frame_sha256, and seq.
+    std::string full_json = mdfp::build_seal_record_json(
+        1700000000000ULL,
+        987654321ULL,
+        "qnx-8.0-adas-node-01",
+        false,
+        42U,
+        "sim-bayer-64x64-01",
+        "kref-sim-0x20261111",
+        "sim-1d-v1",
+        0.75,
+        60.0,
+        0.8125,
+        18.25,
+        66.5,
+        "abcd",
+        1U,
+        "VERIFIED_AUTHENTIC_SILICON");
+    std::string expected_full =
+        "{\"client_time_ns\":1700000000000,"
+        "\"clock_cycles\":987654321,"
+        "\"device_id\":\"qnx-8.0-adas-node-01\","
+        "\"event_type\":\"AUTHENTIC_FRAME\","
+        "\"frame_seq\":42,"
+        "\"frame_sha256\":\"abcd\","
+        "\"k_ref_id\":\"kref-sim-0x20261111\","
+        "\"k_ref_version\":\"sim-1d-v1\","
+        "\"ncc\":0.8125,"
+        "\"ncc_threshold\":0.75,"
+        "\"pce_db\":18.25,"
+        "\"pce_linear\":66.5,"
+        "\"pce_threshold_linear\":60,"
+        "\"raw_sha256\":\"abcd\","
+        "\"scenario\":1,"
+        "\"sensor_id\":\"sim-bayer-64x64-01\","
+        "\"seq\":42,"
+        "\"verdict\":\"VERIFIED_AUTHENTIC_SILICON\"}";
+    assert(full_json == expected_full);
 }
 
 } // namespace

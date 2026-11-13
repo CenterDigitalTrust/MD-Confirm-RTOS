@@ -25,8 +25,14 @@ namespace mdfp {
 
 struct SealInput {
     uint64_t hw_eof_ns = 0;
+    uint64_t capture_cycles = 0;
     bool is_ghost_event = false;
     uint32_t frame_seq = 0;
+    std::string sensor_id = "sim-bayer-64x64-01";
+    std::string k_ref_id = "kref-sim-0x20261111";
+    std::string k_ref_version = "sim-1d-v1";
+    double ncc_threshold = 0.750;
+    double pce_threshold_linear = 60.0;
     double ncc = 0.0;
     double pce_db = 0.0;
     double pce_linear = 0.0;
@@ -214,9 +220,15 @@ public:
 
         out.canonical_json = mdfp::build_seal_record_json(
             in.hw_eof_ns,
+            in.capture_cycles,
             config_.device_id,
             in.is_ghost_event,
             in.frame_seq,
+            in.sensor_id,
+            in.k_ref_id,
+            in.k_ref_version,
+            in.ncc_threshold,
+            in.pce_threshold_linear,
             in.ncc,
             in.pce_db,
             in.pce_linear,

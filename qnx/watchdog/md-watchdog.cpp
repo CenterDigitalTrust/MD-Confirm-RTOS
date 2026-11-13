@@ -101,13 +101,19 @@ int main() {
                         smsg.frame_seq = last_seen_seq + 1;
                         smsg.scenario = SCENARIO_5_CABLE_SABOTAGE;
                         smsg.hw_eof_ns = now_ns;
+                        smsg.capture_cycles = mdfp_cycles();
                         smsg.ncc = 0.0;
                         smsg.pce_linear = 0.0;
                         smsg.pce_db = 0.0;
+                        smsg.ncc_threshold = MDFP_NCC_THRESHOLD;
+                        smsg.pce_threshold_linear = MDFP_PCE_THRESHOLD_LINEAR;
                         smsg.verify_duration_ns = 0;
-                        std::strcpy(smsg.verdict, "GHOST_EVENT_WATCHDOG_TRIPPED");
+                        mdfp::ingest::copy_cstr_bounded(smsg.sensor_id, sizeof(smsg.sensor_id), MDFP_DEFAULT_SENSOR_ID);
+                        mdfp::ingest::copy_cstr_bounded(smsg.k_ref_id, sizeof(smsg.k_ref_id), MDFP_DEFAULT_KREF_ID);
+                        mdfp::ingest::copy_cstr_bounded(smsg.k_ref_version, sizeof(smsg.k_ref_version), MDFP_DEFAULT_KREF_VERSION);
+                        mdfp::ingest::copy_cstr_bounded(smsg.verdict, sizeof(smsg.verdict), "GHOST_EVENT_WATCHDOG_TRIPPED");
                         smsg.is_ghost_event = true;
-                        std::strcpy(smsg.raw_sha256, "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
+                        mdfp::ingest::copy_cstr_bounded(smsg.raw_sha256, sizeof(smsg.raw_sha256), "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
 
                         MdfpSealReply sreply;
                         MsgSend(seal_coid, &smsg, sizeof(smsg), &sreply, sizeof(sreply));

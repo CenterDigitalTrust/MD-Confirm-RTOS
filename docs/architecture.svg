@@ -43,7 +43,7 @@
 
   <!-- Title Header -->
   <text x="40" y="42" fill="#f0f6fc" font-size="22" font-weight="700" letter-spacing="-0.5">MD-Confirm RTOS: QNX Neutrino 8.0 Microkernel Architecture</text>
-  <text x="40" y="66" fill="#8b949e" font-size="13">Hardware-Rooted Camera Authenticity &amp; Zero-Trust Forensic Sealing for ADAS</text>
+  <text x="40" y="66" fill="#8b949e" font-size="13">Sensor-Bound Camera Attestation &amp; Tamper-Evident Forensic Event Log for ADAS (Software Demo)</text>
 
   <!-- Status Badges -->
   <g transform="translate(780, 25)">
@@ -150,7 +150,7 @@
     <text x="172" y="23" fill="#3fb950" font-size="9" font-weight="600" text-anchor="middle">SCHED_FIFO 12</text>
     <text x="16" y="44" fill="#3fb950" font-size="10" font-weight="600">• RFC 6962 Merkle Tree Sealing</text>
     <text x="16" y="59" fill="#8b949e" font-size="10">• RFC 8032 Ed25519 Signatures</text>
-    <text x="16" y="74" fill="#8b949e" font-size="10">• TweetNaCl Hardware Device Key</text>
+    <text x="16" y="74" fill="#8b949e" font-size="10">• FileSigner (Software Key, 0600)</text>
     <text x="16" y="88" fill="#8b949e" font-size="10">• Canonical Metadata (RFC 8785)</text>
     <text x="16" y="100" fill="#a371f7" font-size="9">O_WRONLY Append to Journal</text>
   </g>

@@ -145,8 +145,14 @@ void test_seal_engine_sth_outbox_and_recovery() {
         for (uint32_t seq = 1; seq <= 35; ++seq) {
             mdfp::SealInput in;
             in.hw_eof_ns = 1700000000000000000ULL + static_cast<uint64_t>(seq) * 1000000ULL;
+            in.capture_cycles = 500000ULL + static_cast<uint64_t>(seq) * 100ULL;
             in.is_ghost_event = (seq == 7);
             in.frame_seq = seq;
+            in.sensor_id = "sim-bayer-64x64-01";
+            in.k_ref_id = "kref-sim-0x20261111";
+            in.k_ref_version = "sim-1d-v1";
+            in.ncc_threshold = 0.75;
+            in.pce_threshold_linear = 60.0;
             in.ncc = in.is_ghost_event ? 0.12 : 0.91;
             in.pce_db = in.is_ghost_event ? 1.5 : 32.0;
             in.pce_linear = in.is_ghost_event ? 1.4 : 1584.9;
@@ -159,6 +165,9 @@ void test_seal_engine_sth_outbox_and_recovery() {
             assert(out.io_ok);
             assert(out.leaf_index == seq);
             assert(MdfpSha256::leaf_hash(out.canonical_json) == out.leaf_hash);
+            assert(out.canonical_json.find("\"frame_sha256\":\"" + in.raw_sha256 + "\"") != std::string::npos);
+            assert(out.canonical_json.find("\"clock_cycles\":") != std::string::npos);
+            assert(out.canonical_json.find("\"k_ref_id\":\"kref-sim-0x20261111\"") != std::string::npos);
             assert(out.journal_line.find(" | CANON: " + out.canonical_json) != std::string::npos);
             assert(verify_ed25519_hex("MDFP1\n" + out.merkle_root, out.record_sig));
 

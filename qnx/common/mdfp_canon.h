@@ -334,7 +334,49 @@ inline std::string canonicalize(const JsonValue& val) {
 
 } // namespace jcs
 
-// Canonical RFC 8785 leaf metadata serializer used by md-seal.
+// Canonical RFC 8785 leaf metadata serializer used by md-seal (full Trust-Boundary v2 schema).
+inline std::string build_seal_record_json(uint64_t client_time_ns,
+                                          uint64_t clock_cycles,
+                                          const std::string& device_id,
+                                          bool is_ghost_event,
+                                          uint32_t frame_seq,
+                                          const std::string& sensor_id,
+                                          const std::string& k_ref_id,
+                                          const std::string& k_ref_version,
+                                          double ncc_threshold,
+                                          double pce_threshold_linear,
+                                          double ncc,
+                                          double pce_db,
+                                          double pce_linear,
+                                          const std::string& frame_sha256,
+                                          uint32_t scenario,
+                                          const std::string& verdict) {
+    using jcs::JsonValue;
+    // canonicalize() sorts all keys in strict RFC 8785 UTF-16 code-unit order.
+    JsonValue obj = JsonValue::make_object({
+        {"client_time_ns",       JsonValue::make_uint(client_time_ns)},
+        {"clock_cycles",         JsonValue::make_uint(clock_cycles)},
+        {"device_id",            JsonValue::make_string(device_id)},
+        {"event_type",           JsonValue::make_string(is_ghost_event ? "GHOST_EVENT_WATCHDOG" : "AUTHENTIC_FRAME")},
+        {"frame_seq",            JsonValue::make_uint(frame_seq)},
+        {"frame_sha256",         JsonValue::make_string(frame_sha256)},
+        {"k_ref_id",             JsonValue::make_string(k_ref_id)},
+        {"k_ref_version",        JsonValue::make_string(k_ref_version)},
+        {"ncc",                  JsonValue::make_double(ncc)},
+        {"ncc_threshold",        JsonValue::make_double(ncc_threshold)},
+        {"pce_db",               JsonValue::make_double(pce_db)},
+        {"pce_linear",           JsonValue::make_double(pce_linear)},
+        {"pce_threshold_linear", JsonValue::make_double(pce_threshold_linear)},
+        {"raw_sha256",           JsonValue::make_string(frame_sha256)},
+        {"scenario",             JsonValue::make_uint(scenario)},
+        {"sensor_id",            JsonValue::make_string(sensor_id)},
+        {"seq",                  JsonValue::make_uint(frame_seq)},
+        {"verdict",              JsonValue::make_string(verdict)},
+    });
+    return jcs::canonicalize(obj);
+}
+
+// Legacy 10-argument serializer preserved for existing unit tests / KAT vectors.
 inline std::string build_seal_record_json(uint64_t client_time_ns,
                                           const std::string& device_id,
                                           bool is_ghost_event,
