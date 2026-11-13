@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "md-prnu-eval"
+version = "0.1.0"
+description = "PRNU camera identification, robustness, and fingerprint-copy attack evaluation harness for MD-Confirm RTOS"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "numpy>=1.24",
+    "PyWavelets>=1.4",
+    "Pillow>=10.0",
+    "scipy>=1.10",
+    "matplotlib>=3.7",
+]
+
+[project.scripts]
+md-prnu-eval = "prnu_eval.cli:main"
+
+[tool.setuptools]
+packages = ["prnu_eval"]

@@ -51,7 +51,7 @@ In mission-critical embedded systems and forensic computing, acknowledging threa
 | 1 | Frame from another physical camera (Silicon swap) | **YES** (`SIMULATED`) | Low Peak-to-Correlation Energy ($\text{PCE} < 60.0$ linear / $< 17.78\text{ dB}$) relative to synthetic $K_{\text{REF}}$ |
 | 2 | Synthetic AI deepfake (no silicon noise) | **YES** (`SIMULATED`) | Flat synthetic frame yields negligible PRNU correlation ($\text{PCE} \ll 17.78\text{ dB}$, $\text{NCC} \approx 0.01$) |
 | 3 | Frame alteration after ingestion | **ROADMAP** | Cryptographic hash in Merkle leaf (single-slot SHM snapshot race & leaf preimage persistence on roadmap) |
-| 4 | Synthetic frame with pre-applied $K_{\text{REF}}$ noise | **ROADMAP** | PRNU matches; automated interval-jitter blocking not yet implemented (`NOT YET MEASURED`) |
+| 4 | Synthetic frame with pre-applied $K_{\text{REF}}$ noise (fingerprint-copy attack) | **ROADMAP** | PRNU matches by construction; real-dataset copy-attack minimum $N_{\text{attack}}$ (`NOT YET MEASURED` — harness in [`host/prnu-eval/`](host/prnu-eval/) & [`docs/PRNU_RESULTS.md`](docs/PRNU_RESULTS.md)) and automated interval-jitter blocking (`ROADMAP`) |
 | 5 | Optical playback in front of lens (screen attack) | **BOUNDARY** | Outside silicon sensor perimeter (requires active optical depth sensing) |
 | 6 | Hardware bus emulator on FPGA with precise rhythm | **BOUNDARY** | Physical CSI-2 bus timing can be mimicked by custom FPGA hardware |
 | 7 | MIPI cable severed or camera power loss | **YES** (`SIMULATED`) | `md-watchdog`: Asynchronous QNX pulse timeout ($> 50\text{ ms}$) trips emergency `GHOST_EVENT` |
@@ -162,11 +162,12 @@ Full details live in **[`docs/LIMITATIONS.md`](docs/LIMITATIONS.md)**. Key const
 * **Normalized Cross-Correlation (NCC):** Dimensionless coefficient $[-1.0, 1.0]$ measuring normalized noise alignment.
 * **Peak-to-Correlation Energy (PCE):** Dimensionless energy ratio ($\text{peak}^2 / \text{mean sidelobe energy}$) established by J. Fridrich and M. Goljan. Standard literature threshold is $\text{PCE} \ge 60$ (linear), corresponding to $\approx 17.78\text{ dB}$ ($10 \log_{10}(60)$).
 * In MD-Confirm RTOS:
-  * `pce_linear` and `pce_db` are recorded per frame (`md-verify` currently computes a 1D 3-sample residual dot product rather than 2D wavelet/FFT PCE; full 2D evaluation on real camera datasets is `NOT YET MEASURED`).
+  * `pce_linear` and `pce_db` are recorded per frame (`qnx/verify/md-verify.cpp` currently computes a 1D 3-sample residual dot product rather than 2D wavelet/FFT PCE).
+  * An offline 2D PRNU evaluation harness ([`host/prnu-eval/`](host/prnu-eval/), runnable as `python -m prnu_eval --dataset PATH --out docs/evidence/prnu/`) implements `pywt` `db4` Mihcak wavelet denoising, weighted MLE reference $K$, row/col zero-mean normalization, NCC, and signed 2D FFT PCE (`11x11` peak exclusion) for Dresden / VISION real-camera datasets; empirical results in [`docs/PRNU_RESULTS.md`](docs/PRNU_RESULTS.md) remain **`NOT YET MEASURED`**.
   * Synthetic benchmark thresholds: $\text{NCC} \ge 0.75$, $\text{PCE} \ge 60.0$ linear ($17.78\text{ dB}$).
 
 ### Synthetic Simulation vs Bare-Metal CMOS Calibration:
-> **Engineering Calibration Notice:** Synthetic scenario logs in [`docs/evidence/pidin.txt`](docs/evidence/pidin.txt) report $\text{NCC} \approx 0.787\text{--}0.789$ and $\text{PCE} \approx 34.0\text{--}34.1\text{ dB}$ (`SIMULATED` on unattenuated synthetic Bayer patterns). Real camera ROC curves (FAR/FRR across JPEG quality and temperatures $-40^\circ\text{C}$ to $+85^\circ\text{C}$) on physical CMOS sensors (e.g., Sony IMX390 / ON Semi AR0820) are **`NOT YET MEASURED`**.
+> **Engineering Calibration Notice:** Synthetic scenario logs in [`docs/evidence/pidin.txt`](docs/evidence/pidin.txt) report $\text{NCC} \approx 0.787\text{--}0.789$ and $\text{PCE} \approx 34.0\text{--}34.1\text{ dB}$ (`SIMULATED` on unattenuated synthetic Bayer patterns). Real camera ROC curves (same vs different camera, $N_{\text{ref}}$ sweep, JPEG 95/90/75 / downscale / brightness robustness, fingerprint-copy $N_{\text{attack}}$, and temperatures $-40^\circ\text{C}$ to $+85^\circ\text{C}$) on consumer or physical CMOS sensors (e.g., Sony IMX390 / ON Semi AR0820) are **`NOT YET MEASURED`** (see [`docs/PRNU_RESULTS.md`](docs/PRNU_RESULTS.md)).
 
 ---
 

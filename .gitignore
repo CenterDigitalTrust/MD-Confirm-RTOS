@@ -17,6 +17,13 @@ build/
 evidence/
 !docs/evidence/
 
+# Python build artifacts and PRNU datasets (NEVER commit raw dataset images)
+*.egg-info/
+__pycache__/
+*.py[cod]
+datasets/
+prnu_dataset/
+
 # Python Bytecode and Environments
 __pycache__/
 *.py[cod]
