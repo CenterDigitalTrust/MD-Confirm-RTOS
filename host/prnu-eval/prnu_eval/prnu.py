@@ -101,7 +101,7 @@ def estimate_reference_k(
         raise ValueError("residuals and intensities must be non-empty lists of equal length")
     num = np.zeros_like(residuals[0], dtype=np.float64)
     den = np.zeros_like(residuals[0], dtype=np.float64)
-    for w_i, img_i in zip(residuals, intensities):
+    for w_i, img_i in zip(residuals, intensities, strict=True):
         num += w_i * img_i
         den += img_i * img_i
     k_raw = num / (den + 1e-12)

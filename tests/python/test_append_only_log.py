@@ -143,7 +143,7 @@ def _write_sth_log(path: pathlib.Path, entries: list[dict]) -> None:
 
 def test_trust_basis_none_emits_warning():
     bundle = _build_synthetic_bundle(count=8, sth_every=4)
-    with tempfile.TemporaryDirectory() as tmpdir:
+    with tempfile.TemporaryDirectory(ignore_cleanup_errors=(os.name == "nt")) as tmpdir:
         d = pathlib.Path(tmpdir)
         jpath = d / "journal.log"
         _write_lines(jpath, bundle["journal_lines"])
@@ -168,7 +168,7 @@ def test_trust_basis_none_emits_warning():
 
 def test_trust_basis_file_and_solana_sources():
     bundle = _build_synthetic_bundle(count=8, sth_every=4)
-    with tempfile.TemporaryDirectory() as tmpdir:
+    with tempfile.TemporaryDirectory(ignore_cleanup_errors=(os.name == "nt")) as tmpdir:
         d = pathlib.Path(tmpdir)
         jpath = d / "journal.log"
         cpath = d / "cp.sth"
@@ -200,7 +200,7 @@ def test_trust_basis_file_and_solana_sources():
 def test_attack_tail_truncation():
     """Tail truncation: remove trailing entries after a trusted checkpoint."""
     bundle = _build_synthetic_bundle(count=12, sth_every=4)
-    with tempfile.TemporaryDirectory() as tmpdir:
+    with tempfile.TemporaryDirectory(ignore_cleanup_errors=(os.name == "nt")) as tmpdir:
         d = pathlib.Path(tmpdir)
         jpath = d / "truncated.log"
         cpath = d / "checkpoint_12.sth"
@@ -252,7 +252,7 @@ def test_attack_rollback_to_earlier_valid_state():
             f"VERDICT: AUTHENTIC | CANON: {cstr}"
         )
 
-    with tempfile.TemporaryDirectory() as tmpdir:
+    with tempfile.TemporaryDirectory(ignore_cleanup_errors=(os.name == "nt")) as tmpdir:
         d = pathlib.Path(tmpdir)
         jpath = d / "rolled_back_fork.log"
         jpath_snap = d / "rolled_back_snapshot.log"
@@ -279,7 +279,7 @@ def test_attack_swap_of_two_records():
     swapped_renum[2] = swapped_renum[2].replace("RECORD #4 |", "RECORD #3 |", 1)
     swapped_renum[3] = swapped_renum[3].replace("RECORD #3 |", "RECORD #4 |", 1)
 
-    with tempfile.TemporaryDirectory() as tmpdir:
+    with tempfile.TemporaryDirectory(ignore_cleanup_errors=(os.name == "nt")) as tmpdir:
         d = pathlib.Path(tmpdir)
         jpath = d / "swapped.log"
         jpath_renum = d / "swapped_renum.log"
@@ -326,7 +326,7 @@ def test_attack_tail_replaced_and_resigned_with_other_key():
             f"VERDICT: AUTHENTIC | CANON: {cstr}"
         )
 
-    with tempfile.TemporaryDirectory() as tmpdir:
+    with tempfile.TemporaryDirectory(ignore_cleanup_errors=(os.name == "nt")) as tmpdir:
         jpath = pathlib.Path(tmpdir) / "resigned_tail.log"
         _write_lines(jpath, lines)
         res = md_verify_cli.verify_journal(str(jpath))
@@ -355,7 +355,7 @@ def test_attack_duplicated_leaf():
         f"VERDICT: AUTHENTIC | CANON: {dup_canon}"
     )
 
-    with tempfile.TemporaryDirectory() as tmpdir:
+    with tempfile.TemporaryDirectory(ignore_cleanup_errors=(os.name == "nt")) as tmpdir:
         jpath = pathlib.Path(tmpdir) / "dup_leaf.log"
         _write_lines(jpath, lines)
         res = md_verify_cli.verify_journal(str(jpath))
@@ -374,7 +374,7 @@ def test_attack_one_flipped_bit_in_metadata():
     lines_field = list(bundle["journal_lines"])
     lines_field[1] = lines_field[1].replace("VERDICT: AUTHENTIC", "VERDICT: AUTHENTID")
 
-    with tempfile.TemporaryDirectory() as tmpdir:
+    with tempfile.TemporaryDirectory(ignore_cleanup_errors=(os.name == "nt")) as tmpdir:
         d = pathlib.Path(tmpdir)
         j1 = d / "flip_canon.log"
         j2 = d / "flip_field.log"
@@ -409,7 +409,7 @@ def test_attack_sth_with_decreasing_tree_size():
     bad_sig = priv.sign(b"MDFP1-STH\n" + bad_canon).hex()
     sths[1] = {"sth": bad_sth, "sig": bad_sig}
 
-    with tempfile.TemporaryDirectory() as tmpdir:
+    with tempfile.TemporaryDirectory(ignore_cleanup_errors=(os.name == "nt")) as tmpdir:
         d = pathlib.Path(tmpdir)
         jpath = d / "journal.log"
         spath = d / "sth.log"
@@ -432,7 +432,7 @@ def test_attack_broken_prev_sth_chain():
     broken_sig = priv.sign(b"MDFP1-STH\n" + broken_canon).hex()
     sths[1] = {"sth": broken_sth, "sig": broken_sig}
 
-    with tempfile.TemporaryDirectory() as tmpdir:
+    with tempfile.TemporaryDirectory(ignore_cleanup_errors=(os.name == "nt")) as tmpdir:
         d = pathlib.Path(tmpdir)
         jpath = d / "journal.log"
         spath = d / "sth.log"
@@ -515,7 +515,7 @@ int main(int argc, char** argv) {
     return 0;
 }
 """
-    with tempfile.TemporaryDirectory() as tmpdir:
+    with tempfile.TemporaryDirectory(ignore_cleanup_errors=(os.name == "nt")) as tmpdir:
         d = pathlib.Path(tmpdir)
         driver_cpp = d / "driver.cpp"
         driver_cpp.write_text(cpp_driver, encoding="utf-8")
@@ -602,7 +602,7 @@ int main(int argc, char** argv) {
 
 def test_tsa_client_and_verifier_protocol_mocked():
     bundle = _build_synthetic_bundle(count=6, sth_every=3)
-    with tempfile.TemporaryDirectory() as tmpdir:
+    with tempfile.TemporaryDirectory(ignore_cleanup_errors=(os.name == "nt")) as tmpdir:
         d = pathlib.Path(tmpdir)
         jpath = d / "journal.log"
         spath = d / "sth.log"
@@ -684,7 +684,7 @@ def test_tsa_real_openssl_end_to_end():
         pytest.skip("openssl CLI not installed on this host")
 
     bundle = _build_synthetic_bundle(count=6, sth_every=3)
-    with tempfile.TemporaryDirectory() as tmpdir:
+    with tempfile.TemporaryDirectory(ignore_cleanup_errors=(os.name == "nt")) as tmpdir:
         d = pathlib.Path(tmpdir)
         jpath = d / "journal.log"
         spath = d / "sth.log"
