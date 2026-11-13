@@ -1,0 +1,94 @@
+name: Host CI (Python, C++ Sanitizers, KATs & Fuzz)
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+# NOTE ON QNX TARGETS:
+# This workflow does NOT attempt to cross-compile or boot QNX Neutrino 8.0
+# binaries (`qnx/*/*.cpp`). Those binaries depend on proprietary BlackBerry QNX
+# SDP 8.0 headers and runtime libraries (<sys/neutrino.h>, <sys/dispatch.h>,
+# <sys/resmgr.h>, qcc/q++). Here CI validates host Python tooling plus
+# host-portable C/C++ units in `qnx/common/`:
+#   - mdfp_seqlock.h (ThreadSanitizer concurrent stress test)
+#   - mdfp_canon.h   (RFC 8785 JCS known-answer tests + ASan/UBSan)
+#   - mdfp_http.h    (HTTP parser unit tests + libFuzzer/ASan/UBSan)
+#   - mdfp_crypto.h + tweetnacl.c (RFC 8032 Ed25519 + SHA-256 KATs + ASan/UBSan)
+
+jobs:
+  python-lint-and-test:
+    name: Python (ruff + pytest)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Python test dependencies
+        run: python -m pip install --upgrade pip && pip install pytest ruff cryptography
+
+      - name: Lint Python with ruff
+        run: ruff check host tests
+
+      - name: Run Python unit tests with pytest
+        run: pytest -v tests/python
+
+  cpp-sanitizers-kats-fuzz:
+    name: C++ Host Units (Wall/Wextra, ASan/UBSan, TSan, KATs, libFuzzer)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Clang / LLVM toolchain
+        run: sudo apt-get update && sudo apt-get install -y clang g++
+
+      - name: Verify host toolchain versions (QNX SDP intentionally omitted)
+        run: |
+          echo "QNX SDP targets are not built in CI (proprietary toolchain required)."
+          clang++ --version
+          g++ --version
+
+      - name: Build & run RFC 8032 / RFC 8785 / HTTP unit tests (Clang ASan + UBSan)
+        run: |
+          mkdir -p build
+          clang -O2 -Wall -fsanitize=address,undefined -fno-omit-frame-pointer \
+            -c qnx/common/tweetnacl.c -o build/tweetnacl_asan.o
+          clang++ -std=c++17 -O2 -g -Wall -Wextra -Werror \
+            -fsanitize=address,undefined -fno-omit-frame-pointer -Iqnx/common \
+            tests/cpp/test_ed25519_kat.cpp build/tweetnacl_asan.o -o build/test_ed25519_kat
+          clang++ -std=c++17 -O2 -g -Wall -Wextra -Werror \
+            -fsanitize=address,undefined -fno-omit-frame-pointer -Iqnx/common \
+            tests/cpp/test_canon_kat.cpp -o build/test_canon_kat
+          clang++ -std=c++17 -O2 -g -Wall -Wextra -Werror \
+            -fsanitize=address,undefined -fno-omit-frame-pointer -Iqnx/common \
+            tests/cpp/test_http_parser.cpp -o build/test_http_parser
+          ASAN_OPTIONS=detect_leaks=1 ./build/test_ed25519_kat
+          ASAN_OPTIONS=detect_leaks=1 ./build/test_canon_kat
+          ASAN_OPTIONS=detect_leaks=1 ./build/test_http_parser
+
+      - name: Build & run multi-threaded Seqlock test (Clang ThreadSanitizer + GCC UBSan)
+        run: |
+          mkdir -p build
+          clang++ -std=c++17 -O2 -g -Wall -Wextra -Werror \
+            -fsanitize=thread -pthread -Iqnx/common \
+            tests/cpp/test_seqlock.cpp -o build/test_seqlock_tsan
+          TSAN_OPTIONS="halt_on_error=1:second_deadlock_stack=1" ./build/test_seqlock_tsan
+
+          g++ -std=c++17 -O2 -g -Wall -Wextra -Werror \
+            -fsanitize=undefined -pthread -Iqnx/common \
+            tests/cpp/test_seqlock.cpp -o build/test_seqlock_gcc
+          ./build/test_seqlock_gcc
+
+      - name: Fuzz HTTP request parser with libFuzzer (ASan + UBSan)
+        run: |
+          mkdir -p build
+          clang++ -std=c++17 -O1 -g -Wall -Wextra -Werror \
+            -fsanitize=fuzzer,address,undefined -fno-omit-frame-pointer -Iqnx/common \
+            tests/fuzz/fuzz_http_parser.cpp -o build/fuzz_http_parser
+          ./build/fuzz_http_parser tests/fuzz/corpus -max_total_time=15 -print_final_stats=1

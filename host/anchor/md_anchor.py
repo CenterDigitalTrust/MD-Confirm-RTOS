@@ -23,44 +23,35 @@ from cryptography.hazmat.primitives.asymmetric import ed25519
 B58_ALPHABET = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
 
 def b58decode(s: str) -> bytes:
-    res = [0]
-    for c in s:
-        idx = B58_ALPHABET.index(c)
-        carry = idx
-        for j in range(len(res)):
-            carry += res[j] * 58
-            res[j] = carry & 0xff
-            carry >>= 8
-        while carry > 0:
-            res.append(carry & 0xff)
-            carry >>= 8
+    if not s:
+        return b""
+    leading_zeros = 0
     for c in s:
         if c == "1":
-            res.append(0)
+            leading_zeros += 1
         else:
             break
-    return bytes(reversed(res))
+    num = 0
+    for c in s:
+        num = num * 58 + B58_ALPHABET.index(c)
+    raw = num.to_bytes((num.bit_length() + 7) // 8, "big") if num > 0 else b""
+    return (b"\x00" * leading_zeros) + raw
 
 def b58encode(b: bytes) -> str:
-    digits = [0]
-    for byte in b:
-        carry = byte
-        for j in range(len(digits)):
-            carry += digits[j] << 8
-            digits[j] = carry % 58
-            carry //= 58
-        while carry > 0:
-            digits.append(carry % 58)
-            carry //= 58
-    out = ""
+    if not b:
+        return ""
+    leading_zeros = 0
     for byte in b:
         if byte == 0:
-            out += "1"
+            leading_zeros += 1
         else:
             break
-    for d in reversed(digits):
-        out += B58_ALPHABET[d]
-    return out
+    num = int.from_bytes(b, "big")
+    chars = []
+    while num > 0:
+        num, rem = divmod(num, 58)
+        chars.append(B58_ALPHABET[rem])
+    return ("1" * leading_zeros) + "".join(reversed(chars))
 
 def encode_compact_u16(val: int) -> bytes:
     out = bytearray()
@@ -84,7 +75,7 @@ MEMO_PROGRAM_B58 = "MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr"
 def fetch_latest_journal_root(journal_url: str):
     try:
         req = urllib.request.urlopen(journal_url, timeout=10)
-        lines = [l.strip() for l in req.read().decode("utf-8").splitlines() if l.strip()]
+        lines = [line.strip() for line in req.read().decode("utf-8").splitlines() if line.strip()]
         if not lines:
             return None, None
         last_line = lines[-1]

@@ -144,33 +144,7 @@ struct MdfpSealReply {
     char journal_path[128];
 };
 
-// Lock-Free Shared Statistics with Seqlock Versioning
-// Writer (md-capture) increments seqlock_version to odd before write, and even after write.
-// Reader (md-telemetry) reads atomically with zero locks or blocking.
-struct MdfpStatsShared {
-    volatile uint32_t seqlock_version; // Odd = write in progress; Even = stable snapshot
-    uint32_t magic;                    // MDFP_MAGIC
-    uint32_t last_frame_seq;
-    uint32_t last_scenario;
-    double last_pce_db;
-    double last_pce_linear;
-    double last_ncc;
-    double last_latency_b_us;
-    double last_jitter_us;
-    uint64_t last_cycles_delta;
-    char last_verdict[48];
-    char last_frame_sha256[65];
-    char last_merkle_root[65];
-    uint64_t total_frames;
-    uint64_t total_blocked;
-    uint64_t total_ghosts;
-    uint32_t hist_bins[10];
-    uint64_t hist_total_samples;
-    double hist_min_us;
-    double hist_max_us;
-    double hist_mean_us;
-};
-typedef struct MdfpStatsShared MdfpTelemetryShared; // Backwards compatible alias
+#include "mdfp_seqlock.h"
 
 static inline uint64_t mdfp_cycles() {
     return ClockCycles();

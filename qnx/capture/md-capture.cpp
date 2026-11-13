@@ -54,14 +54,21 @@ int main() {
 
     // Lock-Free Statistics Shared Memory with Seqlock (Exposed to decoupled md-telemetry)
     int stats_fd = shm_open(MDFP_STATS_SHM_NAME, O_RDWR | O_CREAT, 0666);
-    ftruncate(stats_fd, sizeof(MdfpStatsShared));
-    MdfpStatsShared* stats = (MdfpStatsShared*)mmap(nullptr, sizeof(MdfpStatsShared), PROT_READ | PROT_WRITE, MAP_SHARED, stats_fd, 0);
+    MdfpStatsShared* stats = nullptr;
+    if (stats_fd >= 0) {
+        if (ftruncate(stats_fd, sizeof(MdfpStatsShared)) == 0) {
+            stats = (MdfpStatsShared*)mmap(nullptr, sizeof(MdfpStatsShared), PROT_READ | PROT_WRITE, MAP_SHARED, stats_fd, 0);
+        }
+        close(stats_fd);
+    }
+    MdfpStatsPayload local_stats{};
+    local_stats.magic = MDFP_MAGIC;
+    local_stats.hist_min_us = 999999.0;
+    std::strncpy(local_stats.last_verdict, "WAITING_FRAMES", sizeof(local_stats.last_verdict) - 1);
+    std::strncpy(local_stats.last_frame_sha256, "0000000000000000000000000000000000000000000000000000000000000000", sizeof(local_stats.last_frame_sha256) - 1);
     if (stats && stats != MAP_FAILED) {
-        std::memset(stats, 0, sizeof(MdfpStatsShared));
-        stats->magic = MDFP_MAGIC;
-        stats->hist_min_us = 999999.0;
-        stats->seqlock_version = 0;
-        std::cout << "[md-capture] Initialized seqlock stats shm: " << MDFP_STATS_SHM_NAME << std::endl;
+        mdfp_seqlock_init(stats, local_stats);
+        std::cout << "[md-capture] Initialized atomic seqlock stats shm: " << MDFP_STATS_SHM_NAME << std::endl;
     }
 
     // Connect to md-verify channel
@@ -148,44 +155,39 @@ int main() {
                         }
 
                         // Atomic Seqlock Update for Lock-Free Reader md-telemetry
+                        local_stats.last_frame_seq = seq;
+                        local_stats.last_scenario = scenario;
+                        local_stats.last_pce_db = reply.pce_db;
+                        local_stats.last_pce_linear = reply.pce_linear;
+                        local_stats.last_ncc = reply.ncc;
+                        local_stats.last_latency_b_us = latency_b_us;
+                        local_stats.last_jitter_us = jitter_us;
+                        local_stats.last_cycles_delta = (capture_wakeup_cycles > hw_eof_cycles) ? (capture_wakeup_cycles - hw_eof_cycles) : 0;
+                        std::memset(local_stats.last_verdict, 0, sizeof(local_stats.last_verdict));
+                        std::strncpy(local_stats.last_verdict, reply.verdict, sizeof(local_stats.last_verdict) - 1);
+                        std::memset(local_stats.last_frame_sha256, 0, sizeof(local_stats.last_frame_sha256));
+                        std::strncpy(local_stats.last_frame_sha256, frame_hash.c_str(), sizeof(local_stats.last_frame_sha256) - 1);
+                        if (reply.status == 0) local_stats.total_frames++;
+                        else local_stats.total_blocked++;
+
+                        local_stats.hist_total_samples++;
+                        if (jitter_us < local_stats.hist_min_us) local_stats.hist_min_us = jitter_us;
+                        if (jitter_us > local_stats.hist_max_us) local_stats.hist_max_us = jitter_us;
+                        local_stats.hist_mean_us = (local_stats.hist_mean_us * (local_stats.hist_total_samples - 1) + jitter_us) / local_stats.hist_total_samples;
+
+                        if (jitter_us < 2.0) local_stats.hist_bins[0]++;
+                        else if (jitter_us < 4.0) local_stats.hist_bins[1]++;
+                        else if (jitter_us < 6.0) local_stats.hist_bins[2]++;
+                        else if (jitter_us < 8.0) local_stats.hist_bins[3]++;
+                        else if (jitter_us < 10.0) local_stats.hist_bins[4]++; // Hard Deadline
+                        else if (jitter_us < 20.0) local_stats.hist_bins[5]++;
+                        else if (jitter_us < 50.0) local_stats.hist_bins[6]++;
+                        else if (jitter_us < 100.0) local_stats.hist_bins[7]++;
+                        else if (jitter_us < 1000.0) local_stats.hist_bins[8]++;
+                        else local_stats.hist_bins[9]++; // Anomaly (> 1 ms)
+
                         if (stats && stats != MAP_FAILED) {
-                            // 1. Begin write: increment version to odd
-                            stats->seqlock_version++;
-                            __atomic_thread_fence(__ATOMIC_RELEASE);
-
-                            // 2. Write statistics payload
-                            stats->last_frame_seq = seq;
-                            stats->last_scenario = scenario;
-                            stats->last_pce_db = reply.pce_db;
-                            stats->last_pce_linear = reply.pce_linear;
-                            stats->last_ncc = reply.ncc;
-                            stats->last_latency_b_us = latency_b_us;
-                            stats->last_jitter_us = jitter_us;
-                            stats->last_cycles_delta = (capture_wakeup_cycles > hw_eof_cycles) ? (capture_wakeup_cycles - hw_eof_cycles) : 48200;
-                            std::strncpy(stats->last_verdict, reply.verdict, 47);
-                            std::strncpy(stats->last_frame_sha256, frame_hash.c_str(), 64);
-                            if (reply.status == 0) stats->total_frames++;
-                            else stats->total_blocked++;
-
-                            stats->hist_total_samples++;
-                            if (jitter_us < stats->hist_min_us) stats->hist_min_us = jitter_us;
-                            if (jitter_us > stats->hist_max_us) stats->hist_max_us = jitter_us;
-                            stats->hist_mean_us = (stats->hist_mean_us * (stats->hist_total_samples - 1) + jitter_us) / stats->hist_total_samples;
-
-                            if (jitter_us < 2.0) stats->hist_bins[0]++;
-                            else if (jitter_us < 4.0) stats->hist_bins[1]++;
-                            else if (jitter_us < 6.0) stats->hist_bins[2]++;
-                            else if (jitter_us < 8.0) stats->hist_bins[3]++;
-                            else if (jitter_us < 10.0) stats->hist_bins[4]++; // Hard Deadline
-                            else if (jitter_us < 20.0) stats->hist_bins[5]++;
-                            else if (jitter_us < 50.0) stats->hist_bins[6]++;
-                            else if (jitter_us < 100.0) stats->hist_bins[7]++;
-                            else if (jitter_us < 1000.0) stats->hist_bins[8]++;
-                            else stats->hist_bins[9]++; // Anomaly (> 1 ms)
-
-                            // 3. End write: increment version to even
-                            __atomic_thread_fence(__ATOMIC_RELEASE);
-                            stats->seqlock_version++;
+                            mdfp_seqlock_write(stats, local_stats);
                         }
 
                         std::cout << "[md-capture] Frame #" << seq 

@@ -1,9 +1,15 @@
 # QNX and C/C++ Build Artifacts
 bin/
+build/
 *.o
 *.elf
 *.so
 *.a
+*.exe
+
+# Python / Test / Lint Caches
+.pytest_cache/
+.ruff_cache/
 
 # Logs and runtime data
 *.log

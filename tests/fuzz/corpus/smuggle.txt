@@ -1,0 +1,3 @@
+GET /unknown HTTP/1.1
+X-Injected: GET /api/stats
+

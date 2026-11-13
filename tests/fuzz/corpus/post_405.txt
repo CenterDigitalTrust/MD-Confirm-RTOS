@@ -1,0 +1,4 @@
+POST /api/stats HTTP/1.1
+Host: 127.0.0.1:9090
+Content-Length: 0
+

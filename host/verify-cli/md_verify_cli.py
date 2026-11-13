@@ -52,10 +52,10 @@ def fetch_journal(source: str) -> list:
         req = urllib.request.Request(source, headers={"User-Agent": "MD-Confirm-Verifier/2.0"})
         with urllib.request.urlopen(req, timeout=15) as resp:
             text = resp.read().decode("utf-8")
-            return [l.strip() for l in text.splitlines() if l.strip()]
+            return [line.strip() for line in text.splitlines() if line.strip()]
     elif os.path.exists(source):
         with open(source, "r", encoding="utf-8") as f:
-            return [l.strip() for l in f if l.strip()]
+            return [line.strip() for line in f if line.strip()]
     return []
 
 def fetch_solana_tx_memo(tx_signature: str, rpc_url: str):

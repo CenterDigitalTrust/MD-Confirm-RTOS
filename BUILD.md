@@ -139,7 +139,8 @@ python3 host/anchor/md_anchor.py --journal-url http://127.0.0.1:9090/api/journal
 
 ---
 
-## 7. Verification Status & Disclaimers
+## 7. Continuous Integration (Host Only) & Verification Status
 
-* **Verified in QEMU x86_64:** Compilation of all 7 native binaries, QNX IPC (`MsgSend`, `MsgReceive`, `MsgSendPulse`), execution in QNX Neutrino 8.0, lock-free `seqlock` on `/mdfp_stats_shm`, attack scenarios 1–6, audit via `md_verify_cli.py`, and ledger anchoring to Solana Mainnet.
-* **Unverified on bare-metal silicon:** Interfacing with physical automotive CSI-2 camera hardware (Sony IMX390) and hardware cryptographic co-processor TPM 2.0 / HSM (scheduled on production roadmap).
+* **GitHub Actions Host CI ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)):** Runs `ruff` and `pytest` on host Python tools (`host/*`, `tests/python/*`), compiles and tests portable C++ units (`qnx/common/mdfp_seqlock.h`, `qnx/common/mdfp_canon.h`, `qnx/common/mdfp_http.h`, `qnx/common/mdfp_crypto.h`, `qnx/common/tweetnacl.c`) with `-Wall -Wextra -Werror`, ASan/UBSan, ThreadSanitizer (`-fsanitize=thread` on multi-threaded seqlock stress tests), RFC 8032 Ed25519 / RFC 8785 JCS known-answer tests, and `libFuzzer` on the HTTP request parser. **QNX targets (`qnx/*/*.cpp`) are NOT built in CI** because BlackBerry QNX SDP 8.0 headers/toolchains are proprietary.
+* **QEMU x86_64 Simulation (`SIMULATED`):** Compilation of all 7 native QNX binaries, QNX IPC (`MsgSend`, `MsgReceive`, `MsgSendPulse`), and scenario evaluation in QNX Neutrino 8.0 QEMU require local QNX SDP 8.0 (`q++` / `qcc`). Any edits to `qnx/*` since the last QEMU build are `UNTESTED ON QNX` until rebuilt with QNX SDP 8.0.
+* **Unverified on bare-metal silicon (`NOT YET MEASURED`):** Interfacing with physical automotive CSI-2 camera hardware, real PRNU ROC curves, and hardware cryptographic co-processor TPM 2.0 / HSM (`ROADMAP`).

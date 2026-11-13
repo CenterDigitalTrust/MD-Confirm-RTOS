@@ -20,6 +20,7 @@
 
 #include "../common/mdfp_protocol.h"
 #include "../common/mdfp_crypto.h"
+#include "../common/mdfp_canon.h"
 
 extern "C" {
 #include "../common/tweetnacl.h"
@@ -95,21 +96,18 @@ int main() {
 
         g_leaf_counter++;
 
-        // 1. Format Canonical JSON (RFC 8785)
-        std::ostringstream json;
-        json << "{"
-             << "\"client_time_ns\":" << msg.hw_eof_ns << ","
-             << "\"device_id\":\"qnx-8.0-adas-node-01\","
-             << "\"event_type\":\"" << (msg.is_ghost_event ? "GHOST_EVENT_WATCHDOG" : "AUTHENTIC_FRAME") << "\","
-             << "\"frame_seq\":" << msg.frame_seq << ","
-             << "\"ncc\":" << std::fixed << std::setprecision(4) << msg.ncc << ","
-             << "\"pce_db\":" << std::fixed << std::setprecision(2) << msg.pce_db << ","
-             << "\"pce_linear\":" << std::fixed << std::setprecision(2) << msg.pce_linear << ","
-             << "\"raw_sha256\":\"" << msg.raw_sha256 << "\","
-             << "\"scenario\":" << msg.scenario << ","
-             << "\"verdict\":\"" << msg.verdict << "\""
-             << "}";
-        std::string canon = json.str();
+        // 1. Format Canonical JSON (RFC 8785) via host-tested serializer
+        std::string canon = mdfp::build_seal_record_json(
+            msg.hw_eof_ns,
+            "qnx-8.0-adas-node-01",
+            msg.is_ghost_event,
+            msg.frame_seq,
+            msg.ncc,
+            msg.pce_db,
+            msg.pce_linear,
+            msg.raw_sha256,
+            msg.scenario,
+            msg.verdict);
 
         // 2. Compute RFC 6962 Leaf Hash: SHA-256(0x00 || canonical_json)
         std::string leaf_hash = MdfpSha256::leaf_hash(canon);
