@@ -18,6 +18,7 @@ on:
 #   - mdfp_http.h      (HTTP parser unit tests + libFuzzer/ASan/UBSan)
 #   - mdfp_crypto.h + tweetnacl.c (RFC 8032 Ed25519 + SHA-256 KATs + ASan/UBSan)
 #   - mdfp_merkle.h + mdfp_seal_core.h (RFC 6962 + STH + outbox + restart recovery)
+#   - mdfp_signals.h (SIMULATED seq/timing bounds, p50/p99, HMAC challenge-response)
 
 jobs:
   python-lint-and-test:
@@ -81,12 +82,16 @@ jobs:
           clang++ -std=c++17 -O2 -g -Wall -Wextra -Werror -D_POSIX_C_SOURCE=200809L \
             -fsanitize=address,undefined -fno-omit-frame-pointer -Iqnx/common \
             tests/cpp/test_signer.cpp build/tweetnacl_asan.o -o build/test_signer
+          clang++ -std=c++17 -O2 -g -Wall -Wextra -Werror \
+            -fsanitize=address,undefined -fno-omit-frame-pointer -Iqnx/common \
+            tests/cpp/test_signals.cpp -o build/test_signals
           ASAN_OPTIONS=detect_leaks=1 ./build/test_ed25519_kat
           ASAN_OPTIONS=detect_leaks=1 ./build/test_canon_kat
           ASAN_OPTIONS=detect_leaks=1 ./build/test_http_parser
           ASAN_OPTIONS=detect_leaks=1 ./build/test_seal_core
           ASAN_OPTIONS=detect_leaks=1 ./build/test_ingest
           ASAN_OPTIONS=detect_leaks=1 ./build/test_signer
+          ASAN_OPTIONS=detect_leaks=1 ./build/test_signals
 
       - name: Build & run multi-threaded Seqlock test (Clang ThreadSanitizer + GCC UBSan)
         run: |

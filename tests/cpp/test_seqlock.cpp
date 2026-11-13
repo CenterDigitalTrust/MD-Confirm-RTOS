@@ -35,6 +35,14 @@ MdfpStatsPayload make_payload(uint32_t seq) {
     p.hist_min_us = 0.25;
     p.hist_max_us = static_cast<double>(seq) + 10.0;
     p.hist_mean_us = static_cast<double>(seq) * 0.5;
+    p.interval_cycles_p50 = static_cast<uint64_t>(seq) * 1000ULL;
+    p.interval_cycles_p99 = static_cast<uint64_t>(seq) * 2000ULL;
+    p.interval_us_p50 = static_cast<double>(seq) * 1.5;
+    p.interval_us_p99 = static_cast<double>(seq) * 2.5;
+    p.interval_samples = static_cast<uint64_t>(seq) * 3ULL;
+    p.seq_timing_failures = static_cast<uint64_t>(seq % 7U);
+    p.challenge_failures = static_cast<uint64_t>(seq % 5U);
+    p.extra_signals_enabled = static_cast<uint8_t>(seq & 1U);
     return p;
 }
 
@@ -58,6 +66,14 @@ void verify_payload_consistency(const MdfpStatsPayload& p) {
     assert(p.hist_min_us == 0.25);
     assert(p.hist_max_us == static_cast<double>(seq) + 10.0);
     assert(p.hist_mean_us == static_cast<double>(seq) * 0.5);
+    assert(p.interval_cycles_p50 == static_cast<uint64_t>(seq) * 1000ULL);
+    assert(p.interval_cycles_p99 == static_cast<uint64_t>(seq) * 2000ULL);
+    assert(p.interval_us_p50 == static_cast<double>(seq) * 1.5);
+    assert(p.interval_us_p99 == static_cast<double>(seq) * 2.5);
+    assert(p.interval_samples == static_cast<uint64_t>(seq) * 3ULL);
+    assert(p.seq_timing_failures == static_cast<uint64_t>(seq % 7U));
+    assert(p.challenge_failures == static_cast<uint64_t>(seq % 5U));
+    assert(p.extra_signals_enabled == static_cast<uint8_t>(seq & 1U));
 
     char expected_verdict[48];
     char expected_sha[65];

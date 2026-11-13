@@ -342,6 +342,17 @@ int main(int argc, char** argv) {
                  << "\"deepfakes_blocked\":" << (valid ? snap.total_blocked : 0) << ","
                  << "\"ghost_events\":" << (valid ? snap.total_ghosts : 0)
                  << "},"
+                 << "\"extra_signals_enabled\":" << ((valid && snap.extra_signals_enabled) ? "true" : "false") << ","
+                 << "\"extra_signals_note\":\"SIMULATED only (off by default); shared-secret challenge-response models per-frame sensor control (real sensor support unverified)\","
+                 << "\"interval_stats\":{"
+                 << "\"samples\":" << (valid ? snap.interval_samples : 0) << ","
+                 << "\"p50_cycles\":" << (valid ? snap.interval_cycles_p50 : 0) << ","
+                 << "\"p99_cycles\":" << (valid ? snap.interval_cycles_p99 : 0) << ","
+                 << "\"p50_us\":" << (valid ? snap.interval_us_p50 : 0.0) << ","
+                 << "\"p99_us\":" << (valid ? snap.interval_us_p99 : 0.0) << ","
+                 << "\"seq_timing_failures\":" << (valid ? snap.seq_timing_failures : 0) << ","
+                 << "\"challenge_failures\":" << (valid ? snap.challenge_failures : 0)
+                 << "},"
                  << "\"jitter_histogram\":{"
                  << "\"bin_0_2_us\":" << (valid ? snap.hist_bins[0] : 0) << ","
                  << "\"bin_2_4_us\":" << (valid ? snap.hist_bins[1] : 0) << ","

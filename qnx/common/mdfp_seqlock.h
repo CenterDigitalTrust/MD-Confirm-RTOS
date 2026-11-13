@@ -39,12 +39,21 @@ struct MdfpStatsPayload {
     double hist_min_us;
     double hist_max_us;
     double hist_mean_us;
+    uint64_t interval_cycles_p50;
+    uint64_t interval_cycles_p99;
+    double interval_us_p50;
+    double interval_us_p99;
+    uint64_t interval_samples;
+    uint64_t seq_timing_failures;
+    uint64_t challenge_failures;
+    uint8_t extra_signals_enabled;
+    uint8_t reserved2[7];
 };
 
 static_assert(std::is_trivially_copyable<MdfpStatsPayload>::value,
               "MdfpStatsPayload must be trivially copyable");
-static_assert(sizeof(MdfpStatsPayload) == 344,
-              "MdfpStatsPayload must remain 344 bytes without implicit compiler padding");
+static_assert(sizeof(MdfpStatsPayload) == 408,
+              "MdfpStatsPayload must remain 408 bytes without implicit compiler padding");
 static_assert((sizeof(MdfpStatsPayload) % sizeof(uint64_t)) == 0,
               "MdfpStatsPayload size must be a multiple of 8 bytes");
 

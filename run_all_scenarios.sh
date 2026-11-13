@@ -1,6 +1,6 @@
 #!/bin/bash
 # run_all_scenarios.sh
-# End-to-end execution of all 6 hackathon attack scenarios on QNX 8.0 native modules
+# End-to-end execution of QNX 8.0 scenarios (PRNU default + optional SIMULATED Task 7 extra signals)
 
 set -e
 source /mnt/qnx-md-rtos/qnx800/qnxsdp-env.sh
@@ -100,6 +100,45 @@ echo "========================================================================"
 echo " SOLANA BLOCKCHAIN ANCHORING:                                           "
 echo "========================================================================"
 python3 $BASE_DIR/host/anchor/md_anchor.py
+
+echo ""
+echo "========================================================================"
+echo " [PHASE 2 - SIMULATED] EXTRA SIGNALS BEYOND PRNU (OFF BY DEFAULT)       "
+echo " Note: Models per-frame sensor control (real sensor support unverified) "
+echo " and shares HMAC secret in software (demonstrates logic, not security). "
+echo "========================================================================"
+kill $VERIFY_PID 2>/dev/null || true
+sleep 0.2
+$BIN_DIR/md-verify --extra-signals > /tmp/verify_extra.log 2>&1 &
+VERIFY_PID=$!
+sleep 0.2
+
+echo "[SIMULATED] (7a) Authentic K_REF + valid HMAC modulation + valid seq/timing (PASS)..."
+$BIN_DIR/md-sensor-sim 1 10 --extra-signals --seq-start 100
+sleep 0.3
+
+echo "[SIMULATED] (7b) Synthetic K_REF without challenge modulation (Scenario 4 -> BLOCK_CHALLENGE_MODULATION)..."
+$BIN_DIR/md-sensor-sim 4 5 --extra-signals --seq-start 110
+sleep 0.3
+
+echo "[SIMULATED] (7c) Replayed recorded authentic frames (Scenario 7 -> BLOCK_SEQ_REPLAY / BLOCK_CHALLENGE_MODULATION)..."
+$BIN_DIR/md-sensor-sim 7 6 --extra-signals --seq-start 115
+sleep 0.3
+
+echo "[SIMULATED] (7d) Sequence gap & timing OOB (Scenario 8 -> BLOCK_SEQ_GAP / BLOCK_TIMING_OUT_OF_BOUNDS)..."
+$BIN_DIR/md-sensor-sim 8 4 --extra-signals --seq-start 125
+sleep 0.3
+
+echo "[SIMULATED] /api/stats extra_signals + interval p50/p99 snapshot:"
+(command -v curl >/dev/null 2>&1 && curl -s http://127.0.0.1:9090/api/stats || true)
+echo ""
+tail -n 25 /tmp/verify_extra.log || true
+
+echo ""
+echo "========================================================================"
+echo " [HOST-ONLY SIMULATED] OPTICAL-FLOW VS SYNTHETIC CAN SPEED CONSISTENCY:  "
+echo "========================================================================"
+python3 $BASE_DIR/host/can-flow/md_can_flow.py --demo
 
 # Clean up background daemons
 kill $CAPTURE_PID $VERIFY_PID $SEAL_PID $WATCHDOG_PID $TELEMETRY_PID 2>/dev/null || true

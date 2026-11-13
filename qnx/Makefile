@@ -20,7 +20,7 @@ all: $(TARGETS)
 common/tweetnacl.o: common/tweetnacl.c common/tweetnacl.h
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(BIN_DIR)/md-sensor-sim: sensor-sim/md-sensor-sim.cpp common/mdfp_protocol.h common/mdfp_ingest.h common/mdfp_crypto.h
+$(BIN_DIR)/md-sensor-sim: sensor-sim/md-sensor-sim.cpp common/mdfp_protocol.h common/mdfp_ingest.h common/mdfp_crypto.h common/mdfp_signals.h
 	@mkdir -p $(BIN_DIR)
 	$(CXX) $(CXXFLAGS) -o $@ $<
 
@@ -28,7 +28,7 @@ $(BIN_DIR)/md-capture: capture/md-capture.cpp common/mdfp_protocol.h common/mdfp
 	@mkdir -p $(BIN_DIR)
 	$(CXX) $(CXXFLAGS) -o $@ $<
 
-$(BIN_DIR)/md-verify: verify/md-verify.cpp common/mdfp_protocol.h common/mdfp_ingest.h common/mdfp_seqlock.h common/mdfp_crypto.h
+$(BIN_DIR)/md-verify: verify/md-verify.cpp common/mdfp_protocol.h common/mdfp_ingest.h common/mdfp_seqlock.h common/mdfp_crypto.h common/mdfp_signals.h
 	@mkdir -p $(BIN_DIR)
 	$(CXX) $(CXXFLAGS) -o $@ $<
 

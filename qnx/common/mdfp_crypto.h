@@ -2,6 +2,7 @@
 // Self-contained RFC 6962 / RFC 8785 / SHA-256 and Ed25519 routines for QNX Neutrino 8.0
 #pragma once
 #include <stdint.h>
+#include <array>
 #include <string>
 #include <vector>
 #include <sstream>
@@ -10,7 +11,7 @@
 
 struct MdfpSha256 {
     static inline uint32_t rotr(uint32_t x, uint32_t n) { return (x >> n) | (x << (32 - n)); }
-    static std::string hash_hex(const uint8_t* data, size_t len) {
+    static std::array<uint8_t, 32> hash_bytes(const uint8_t* data, size_t len) {
         static const uint32_t k[64] = {
             0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,
             0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,
@@ -57,9 +58,23 @@ struct MdfpSha256 {
             }
             h[0]+=a; h[1]+=b; h[2]+=c; h[3]+=d; h[4]+=e; h[5]+=f; h[6]+=g; h[7]+=hh;
         }
+        std::array<uint8_t, 32> out{};
+        for (int i = 0; i < 8; ++i) {
+            out[static_cast<size_t>(i * 4)]     = static_cast<uint8_t>((h[i] >> 24) & 0xFFU);
+            out[static_cast<size_t>(i * 4 + 1)] = static_cast<uint8_t>((h[i] >> 16) & 0xFFU);
+            out[static_cast<size_t>(i * 4 + 2)] = static_cast<uint8_t>((h[i] >> 8) & 0xFFU);
+            out[static_cast<size_t>(i * 4 + 3)] = static_cast<uint8_t>(h[i] & 0xFFU);
+        }
+        return out;
+    }
+
+    static std::string hash_hex(const uint8_t* data, size_t len) {
+        std::array<uint8_t, 32> digest = hash_bytes(data, len);
         std::ostringstream oss;
         oss << std::hex << std::setfill('0');
-        for (int i = 0; i < 8; ++i) oss << std::setw(8) << h[i];
+        for (uint8_t b : digest) {
+            oss << std::setw(2) << static_cast<unsigned int>(b);
+        }
         return oss.str();
     }
 

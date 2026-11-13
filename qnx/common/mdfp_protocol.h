@@ -68,14 +68,16 @@
 #define MDFP_PCE_THRESHOLD_DB     17.78       // 10 * log10(60.0) in power decibels
 #define MDFP_NCC_THRESHOLD        0.750       // Normalized Cross-Correlation threshold for synthetic benchmark
 
-// 6 Hackathon Demo Scenarios
+// Hackathon Demo Scenarios (+ Task 7 SIMULATED extra-signal attack scenarios)
 enum MdfpScenario : uint32_t {
     SCENARIO_1_NATIVE_SENSOR       = 1, // Authentic silicon wafer K_REF -> ALLOW
     SCENARIO_2_FOREIGN_SENSOR      = 2, // Rogue physical camera silicon K_ROGUE -> BLOCK
     SCENARIO_3_SYNTHETIC_NO_PRNU   = 3, // AI deepfake / synthetic frame without PRNU -> BLOCK
-    SCENARIO_4_SYNTHETIC_WITH_PRNU = 4, // Synthetic with pre-applied PRNU -> Rhythm/counter boundary
+    SCENARIO_4_SYNTHETIC_WITH_PRNU = 4, // Synthetic with pre-applied PRNU -> Extra signals block when enabled
     SCENARIO_5_CABLE_SABOTAGE      = 5, // MIPI cut / power loss -> Watchdog GHOST_EVENT
-    SCENARIO_6_JOURNAL_TAMPER      = 6  // Tampered ledger record -> CLI detection
+    SCENARIO_6_JOURNAL_TAMPER      = 6, // Tampered ledger record -> CLI detection
+    SCENARIO_7_REPLAY_FRAME        = 7, // Replayed recorded authentic frames (SIMULATED)
+    SCENARIO_8_SEQ_TIMING_ANOMALY  = 8  // Counter gap / ClockCycles interval out of bounds (SIMULATED)
 };
 
 // Shared Memory Buffer Structure (Written by md-sensor-sim, read by md-capture/md-verify)
@@ -125,6 +127,14 @@ struct MdfpVerifyReply {
     uint64_t verify_start_cycles;
     uint64_t verify_end_cycles;
     uint64_t verify_duration_ns;
+    uint8_t extra_signals_enabled;
+    uint64_t interval_cycles_p50;
+    uint64_t interval_cycles_p99;
+    double interval_us_p50;
+    double interval_us_p99;
+    uint64_t interval_samples;
+    uint64_t seq_timing_failures;
+    uint64_t challenge_failures;
 };
 
 // Message from md-verify / md-watchdog -> md-seal via MsgSend()

@@ -204,6 +204,14 @@ int main() {
                         local_stats.last_latency_b_us = latency_b_us;
                         local_stats.last_jitter_us = jitter_us;
                         local_stats.last_cycles_delta = (capture_wakeup_cycles > hw_eof_cycles) ? (capture_wakeup_cycles - hw_eof_cycles) : 0;
+                        local_stats.extra_signals_enabled = reply.extra_signals_enabled;
+                        local_stats.interval_cycles_p50 = reply.interval_cycles_p50;
+                        local_stats.interval_cycles_p99 = reply.interval_cycles_p99;
+                        local_stats.interval_us_p50 = reply.interval_us_p50;
+                        local_stats.interval_us_p99 = reply.interval_us_p99;
+                        local_stats.interval_samples = reply.interval_samples;
+                        local_stats.seq_timing_failures = reply.seq_timing_failures;
+                        local_stats.challenge_failures = reply.challenge_failures;
                         mdfp::ingest::copy_cstr_bounded(
                             local_stats.last_verdict, sizeof(local_stats.last_verdict), reply.verdict);
                         mdfp::ingest::copy_cstr_bounded(
