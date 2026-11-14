@@ -124,12 +124,18 @@ Requirements: Python 3.8+ with `cryptography` library installed (`pip install cr
 
 ### 1. Independent Zero-Trust Audit:
 ```bash
-# Verify the Merkle tree and Ed25519 signatures from the running node:
+# Offline audit of the captured QNX 8.0 QEMU 65-leaf evidence against Solana Mainnet Slot 469030044 (no QNX SDP required):
+python3 host/verify-cli/md_verify_cli.py \
+  --source docs/evidence/qnx_8_qemu/tamper_evident_journal.log \
+  --sth-log docs/evidence/qnx_8_qemu/sth.log \
+  --solana-tx 54DXk4XAxhuQNDrbTqRXZmPFvEDMFVwxa6FLz1vMT6fjzUzepLivCGgGKAJgjgYQKv96TegrCNoCnyowxbEyiXbT
+
+# Verify the Merkle tree and Ed25519 signatures live from a running QNX node:
 python3 host/verify-cli/md_verify_cli.py http://127.0.0.1:9090/api/journal
 
-# Optional: Cross-verify against on-chain Solana Mainnet anchor:
+# Optional: Cross-verify live node (or baseline 3568-leaf anchor) against a specific Solana Mainnet TX:
 python3 host/verify-cli/md_verify_cli.py http://127.0.0.1:9090/api/journal \
-  --solana-tx 4N4vyHbz3wvMnR6736uePmRPtNdr6Fo6ujk62h1cPhF9tdoUUAicZX7oGwZD4AdRLdkKMC8nD1eEn7Kgb46SPiZW
+  --solana-tx <SOLANA_MAINNET_TX_SIGNATURE>
 ```
 
 ### 2. Solana Mainnet Anchoring Engine:
@@ -140,6 +146,13 @@ export SOLANA_RPC_URL="https://api.mainnet-beta.solana.com"
 
 # Broadcast current Merkle root to Solana Mainnet:
 python3 host/anchor/md_anchor.py --journal-url http://127.0.0.1:9090/api/journal
+```
+
+### 3. Reproducing Host Verification Tests Without QNX SDP 8.0:
+```bash
+pip install pytest ruff cryptography numpy PyWavelets Pillow scipy matplotlib
+ruff check host tests
+pytest -v tests/python
 ```
 
 ---

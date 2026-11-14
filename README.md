@@ -6,10 +6,10 @@ Built for the QNX Global Hackathon. Not affiliated with BlackBerry or QNX.
 ![QNX SDP 8.0](https://img.shields.io/badge/QNX_SDP-8.0_Verified-3fb950?style=flat-square)
 ![Runtime](https://img.shields.io/badge/Runtime-QEMU_x86__64_(SIMULATED)-d29922?style=flat-square)
 ![Solana Mainnet](https://img.shields.io/badge/Solana-Mainnet--Beta_Anchored-8957e5?style=flat-square)
-[![License](https://img.shields.io/badge/License-BUSL--1.1-58a6ff?style=flat-square)](LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-58a6ff?style=flat-square)](LICENSE)
 
 **Hackathon Entry:** BlackBerry QNX Global Hackathon 2026  
-**Author:** `miracledropletmd` ([Center for Digital Trust](https://github.com/CenterDigitalTrust/MD-Confirm-RTOS))  
+**Author:** `miracledropletmd` ([Center for Digital Trust](https://github.com/CenterDigitalTrust/MD-Confirm-RTOS) | `MIRACLE DROPLET MD®`, CIPO #2405513 CANADA)  
 **Primary Track:** Automotive & Mobility (ADAS Black Box & Crash Evidence Sealing)  
 **Target Special Prize:** Best Use of QNX-specific Technologies (\$3,500)
 
@@ -25,11 +25,15 @@ cd qnx && make clean && make all && cd ..
 # 2. Run QNX scenario suite inside QNX 8.0 QEMU (Phase 1 PRNU + Phase 2 --extra-signals)
 ./run_all_scenarios.sh
 
-# 3. Independently verify the captured QNX 8.0 QEMU journal against Solana Mainnet-Beta
+# 3. Independently verify the captured QNX 8.0 QEMU journal against Solana Mainnet-Beta (no QNX SDP required)
+pip install cryptography
 python3 host/verify-cli/md_verify_cli.py \
   --source docs/evidence/qnx_8_qemu/tamper_evident_journal.log \
   --sth-log docs/evidence/qnx_8_qemu/sth.log \
   --solana-tx 54DXk4XAxhuQNDrbTqRXZmPFvEDMFVwxa6FLz1vMT6fjzUzepLivCGgGKAJgjgYQKv96TegrCNoCnyowxbEyiXbT
+
+# 4. Run host Python verification suite (no QNX SDP required)
+pytest -v tests/python
 ```
 
 > **Trust Boundary, Limitations & Calibration Status:** See [`docs/TRUST_BOUNDARY.md`](docs/TRUST_BOUNDARY.md) (inside vs. outside boundary, SHM forging risks, `FileSigner` vs. `ROADMAP` hardware keys), [`docs/LIMITATIONS.md`](docs/LIMITATIONS.md), [`docs/PRNU_RESULTS.md`](docs/PRNU_RESULTS.md), and [`docs/CHANGELOG_UPGRADE.md`](docs/CHANGELOG_UPGRADE.md).  
@@ -249,11 +253,9 @@ python3 host/verify-cli/md_verify_cli.py \
 
 ---
 
-## 11. License (`BUSL-1.1`)
+## 11. License (`MIT`) & Trademarks
 
-**MD-Confirm RTOS** is licensed under the **Business Source License 1.1 (`BUSL-1.1`)** — see [`LICENSE`](LICENSE):
+**MD-Confirm RTOS** is open-source software licensed under the **MIT License** — see [`LICENSE`](LICENSE).
 
-* **Licensor:** Center for Digital Trust (`admin@digitaltrust.living`)
-* **Additional Use Grant:** `None` (non-production, evaluation, testing, academic, and research use permitted; any production or commercial deployment requires a commercial license from Licensor)
-* **Change Date:** `2030-11-13` (maximum 4-year conversion period)
-* **Change License:** `MIT License` (automatically applies on the Change Date)
+* **Copyright:** Copyright © 2026 Center for Digital Trust (`admin@digitaltrust.living`)
+* **Trademark Notice ([`NOTICE`](NOTICE)):** **`MIRACLE DROPLET MD®`** (`CIPO #2405513 CANADA`) is a registered trademark. The MIT License applies strictly to the software and documentation in this repository and does not grant trademark rights.
