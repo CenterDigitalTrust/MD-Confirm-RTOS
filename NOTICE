@@ -2,13 +2,25 @@ MD-Confirm RTOS
 Copyright (c) 2026 Center for Digital Trust (admin@digitaltrust.living)
 Repository: https://github.com/CenterDigitalTrust/MD-Confirm-RTOS
 
+DUAL-LICENSING NOTICE (GNU AGPL-3.0 OR COMMERCIAL OEM LICENSE):
+1. Open-Source License (OSI-Approved):
+   Unless covered by a separate written commercial license agreement, this software is
+   licensed under the GNU Affero General Public License v3.0 (AGPL-3.0-only); see
+   the accompanying LICENSE file. Under AGPL-3.0, any derivative work, proprietary
+   device firmware, or network-accessible service incorporating this software must
+   disclose its complete corresponding source code under the same AGPL-3.0 terms.
+2. Commercial OEM & Enterprise License:
+   Organizations wishing to embed MD-Confirm RTOS in closed-source/proprietary
+   products, ADAS/UAV firmware, or commercial SaaS platforms without source-disclosure
+   obligations under AGPL-3.0 must obtain a commercial OEM license from:
+   Center for Digital Trust (admin@digitaltrust.living).
+
 TRADEMARK NOTICE:
 "MIRACLE DROPLET MD®" (Canadian Intellectual Property Office, CIPO #2405513 CANADA)
 is a registered trademark associated with Center for Digital Trust / miracledropletmd.
-The MIT License in the accompanying LICENSE file grants rights solely to the software
-source code and documentation and does not grant any right, license, or permission to
-use any trademark, service mark, or trade name of the copyright holders, except as
-required for reasonable and customary attribution.
+Neither the GNU AGPL-3.0 license nor access to this repository grants any right,
+license, or permission to use the trademarks, service marks, or trade names of the
+copyright holders, except as required for reasonable and customary attribution.
 
 HACKATHON & AFFILIATION NOTICE:
 Developed for the BlackBerry QNX Global Hackathon 2026 (Automotive & Mobility track).

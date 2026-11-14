@@ -6,7 +6,7 @@ Built for the QNX Global Hackathon. Not affiliated with BlackBerry or QNX.
 ![QNX SDP 8.0](https://img.shields.io/badge/QNX_SDP-8.0_Verified-3fb950?style=flat-square)
 ![Runtime](https://img.shields.io/badge/Runtime-QEMU_x86__64_(SIMULATED)-d29922?style=flat-square)
 ![Solana Mainnet](https://img.shields.io/badge/Solana-Mainnet--Beta_Anchored-8957e5?style=flat-square)
-[![License: MIT](https://img.shields.io/badge/License-MIT-58a6ff?style=flat-square)](LICENSE)
+[![License: AGPL v3](https://img.shields.io/badge/License-AGPL--3.0-58a6ff?style=flat-square)](LICENSE)
 
 **Hackathon Entry:** BlackBerry QNX Global Hackathon 2026  
 **Author:** `miracledropletmd` ([Center for Digital Trust](https://github.com/CenterDigitalTrust/MD-Confirm-RTOS) | `MIRACLE DROPLET MD®`, CIPO #2405513 CANADA)  
@@ -253,9 +253,10 @@ python3 host/verify-cli/md_verify_cli.py \
 
 ---
 
-## 11. License (`MIT`) & Trademarks
+## 11. License (`GNU AGPL-3.0` / Dual-Licensing) & Trademarks
 
-**MD-Confirm RTOS** is open-source software licensed under the **MIT License** — see [`LICENSE`](LICENSE).
+**MD-Confirm RTOS** is dual-licensed:
 
-* **Copyright:** Copyright © 2026 Center for Digital Trust (`admin@digitaltrust.living`)
-* **Trademark Notice ([`NOTICE`](NOTICE)):** **`MIRACLE DROPLET MD®`** (`CIPO #2405513 CANADA`) is a registered trademark. The MIT License applies strictly to the software and documentation in this repository and does not grant trademark rights.
+* **Open-Source License (OSI-Approved — `AGPL-3.0-only`):** Free for open-source use, security audits, research, and evaluation under the **GNU Affero General Public License v3.0** — see [`LICENSE`](LICENSE). Derivative works, embedded firmware, and network-accessible deployments using this code under AGPL-3.0 must disclose their complete corresponding source code under AGPL-3.0.
+* **Commercial OEM & Enterprise License:** Companies integrating **MD-Confirm RTOS** into closed-source/proprietary products (automotive ADAS, UAV avionics, or commercial SaaS services) without AGPL-3.0 source disclosure must obtain a paid commercial OEM license from **Center for Digital Trust** (`admin@digitaltrust.living`).
+* **Copyright & Trademark Notice ([`NOTICE`](NOTICE)):** Copyright © 2026 Center for Digital Trust. **`MIRACLE DROPLET MD®`** (`CIPO #2405513 CANADA`) is a registered trademark; neither AGPL-3.0 nor this repository grants trademark rights.
